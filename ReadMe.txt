@@ -19,6 +19,6 @@ BUILD REQUIREMENTS:
 ===========================================================================
 RUNTIME REQUIREMENTS:
  
-iOS 5.1 or later which has full 128-bit UUID support
+iOS 6 or later
 Bluetooth LE Capable Device
 Bluetooth LE Sensor/s

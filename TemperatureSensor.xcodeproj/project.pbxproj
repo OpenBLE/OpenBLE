@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5B34033B1831CC8100B499BF /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B34033A1831CC8100B499BF /* DetailViewController.m */; };
 		5B4AE3F8182F88C700E9DD0A /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 5B4AE3F7182F88C700E9DD0A /* Default-568h@2x.png */; };
 		B9182535148D762600D6064E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9182534148D762600D6064E /* UIKit.framework */; };
 		B9182537148D762600D6064E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B9182536148D762600D6064E /* Foundation.framework */; };
@@ -26,6 +27,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5B3403391831CC8100B499BF /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
+		5B34033A1831CC8100B499BF /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		5B4AE3F7182F88C700E9DD0A /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		B9182530148D762600D6064E /* TemperatureSensor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TemperatureSensor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9182534148D762600D6064E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -107,6 +110,8 @@
 				B9182546148D762600D6064E /* MainStoryboard.storyboard */,
 				B9182549148D762600D6064E /* ViewController.h */,
 				B918254A148D762600D6064E /* ViewController.m */,
+				5B3403391831CC8100B499BF /* DetailViewController.h */,
+				5B34033A1831CC8100B499BF /* DetailViewController.m */,
 				B918253B148D762600D6064E /* Supporting Files */,
 			);
 			path = TemperatureSensor;
@@ -210,6 +215,7 @@
 				B918254B148D762600D6064E /* ViewController.m in Sources */,
 				B9182557148D79D600D6064E /* LeDiscovery.m in Sources */,
 				B9182558148D79D600D6064E /* LeDataService.m in Sources */,
+				5B34033B1831CC8100B499BF /* DetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

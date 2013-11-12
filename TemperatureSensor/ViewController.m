@@ -5,47 +5,6 @@
  Abstract: User interface to display a list of discovered peripherals
  and allow the user to connect to them.
  
- Version: 1.0
- 
- Disclaimer: IMPORTANT:  This Apple software is supplied to you by 
- Apple Inc. ("Apple") in consideration of your agreement to the
- following terms, and your use, installation, modification or
- redistribution of this Apple software constitutes acceptance of these
- terms.  If you do not agree with these terms, please do not use,
- install, modify or redistribute this Apple software.
- 
- In consideration of your agreement to abide by the following terms, and
- subject to these terms, Apple grants you a personal, non-exclusive
- license, under Apple's copyrights in this original Apple software (the
- "Apple Software"), to use, reproduce, modify and redistribute the Apple
- Software, with or without modifications, in source and/or binary forms;
- provided that if you redistribute the Apple Software in its entirety and
- without modifications, you must retain this notice and the following
- text and disclaimers in all such redistributions of the Apple Software. 
- Neither the name, trademarks, service marks or logos of Apple Inc. 
- may be used to endorse or promote products derived from the Apple
- Software without specific prior written permission from Apple.  Except
- as expressly stated in this notice, no other rights or licenses, express
- or implied, are granted by Apple herein, including but not limited to
- any patent rights that may be infringed by your derivative works or by
- other works in which the Apple Software may be incorporated.
- 
- The Apple Software is provided by Apple on an "AS IS" basis.  APPLE
- MAKES NO WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION
- THE IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS
- FOR A PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND
- OPERATION ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
- 
- IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL
- OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- INTERRUPTION) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION,
- MODIFICATION AND/OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED
- AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
- STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
- POSSIBILITY OF SUCH DAMAGE.
- 
- Copyright (C) 2011 Apple Inc. All Rights Reserved.
  
  */
 
@@ -54,35 +13,20 @@
 #import "ViewController.h"
 #import "LeDiscovery.h"
 #import "LeDataService.h"
-
+#import "DetailViewController.h"
 
 
 @interface ViewController ()  <LeDiscoveryDelegate, LeDataProtocol, UITableViewDataSource, UITableViewDelegate>
 @property (retain, nonatomic) LeDataService *currentlyDisplayingService;
 @property (retain, nonatomic) NSMutableArray            *connectedServices;
-@property (retain, nonatomic) IBOutlet UILabel          *currentlyConnectedSensor;
-@property (retain, nonatomic) IBOutlet UILabel          *currentTemperatureLabel;
-@property (retain, nonatomic) IBOutlet UILabel          *maxAlarmLabel,*minAlarmLabel;
 @property (retain, nonatomic) IBOutlet UITableView      *sensorsTable;
-@property (retain, nonatomic) IBOutlet UIStepper        *maxAlarmStepper,*minAlarmStepper;
-- (IBAction)maxStepperChanged;
-- (IBAction)minStepperChanged;
 @end
-
-
 
 @implementation ViewController
 
-
 @synthesize currentlyDisplayingService;
 @synthesize connectedServices;
-@synthesize currentlyConnectedSensor;
 @synthesize sensorsTable;
-@synthesize currentTemperatureLabel;
-@synthesize maxAlarmLabel,minAlarmLabel;
-@synthesize maxAlarmStepper,minAlarmStepper;
-
-
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -99,20 +43,15 @@
     [[LeDiscovery sharedInstance] setPeripheralDelegate:self];
     [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterBackgroundNotification:) name:kAlarmServiceEnteredBackgroundNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterForegroundNotification:) name:kAlarmServiceEnteredForegroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterBackgroundNotification:) name:kDataServiceEnteredBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterForegroundNotification:) name:kDataServiceEnteredForegroundNotification object:nil];
 }
-
 
 - (void) viewDidUnload
 {
-    [self setCurrentlyConnectedSensor:nil];
-    [self setCurrentTemperatureLabel:nil];
-    [self setMaxAlarmLabel:nil];
-    [self setMinAlarmLabel:nil];
+
     [self setSensorsTable:nil];
-    [self setMaxAlarmStepper:nil];
-    [self setMinAlarmStepper:nil];
+
     [self setConnectedServices:nil];
     [self setCurrentlyDisplayingService:nil];
     
@@ -121,37 +60,37 @@
     [super viewDidUnload];
 }
 
-
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-
 - (void) dealloc 
 {
     [[LeDiscovery sharedInstance] stopScanning];
     
-    [currentTemperatureLabel release];
-    [maxAlarmLabel release];
-    [minAlarmLabel release];
+
     [sensorsTable release];
-    [maxAlarmStepper release];
-    [minAlarmStepper release];
-    
-    [currentlyConnectedSensor release];
+
     [connectedServices release];
     [currentlyDisplayingService release];
     
     [super dealloc];
 }
 
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
+    
+    DetailViewController *dest =[segue destinationViewController];
+    dest.currentlyDisplayingService = currentlyDisplayingService;
+    [currentlyDisplayingService setController:dest];
+    
+}
 
 
 #pragma mark -
-#pragma mark LeTemperatureAlarm Interactions
+#pragma mark LeData Interactions
 /****************************************************************************/
-/*                  LeTemperatureAlarm Interactions                         */
+/*                  LeData Interactions                                     */
 /****************************************************************************/
 - (LeDataService*) serviceForPeripheral:(CBPeripheral *)peripheral
 {
@@ -182,73 +121,12 @@
 
 
 #pragma mark -
-#pragma mark LeTemperatureAlarmProtocol Delegate Methods
+#pragma mark LeDataProtocol Delegate Methods
 /****************************************************************************/
-/*				LeTemperatureAlarmProtocol Delegate Methods					*/
+/*				LeDataProtocol Delegate Methods                             */
 /****************************************************************************/
-/** Broke the high or low temperature bound */
-- (void) alarmService:(LeDataService*)service didSoundAlarmOfType:(AlarmType)alarm
-{
-    if (![service isEqual:currentlyDisplayingService])
-        return;
-    
-    NSString *title;
-    NSString *message;
-    
-	switch (alarm) {
-		case kAlarmLow: 
-			NSLog(@"Alarm low");
-            title     = @"Alarm Notification";
-            message   = @"Low Alarm Fired";
-			break;
-            
-		case kAlarmHigh: 
-			NSLog(@"Alarm high");
-            title     = @"Alarm Notification";
-            message   = @"High Alarm Fired";
-			break;
-	}
-    
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alertView show];
-    [alertView release];
-}
-
-
-/** Back into normal values */
-- (void) alarmServiceDidStopAlarm:(LeDataService*)service
-{
-    NSLog(@"Alarm stopped");
-}
-
-
-/** Current temp changed */
-- (void) alarmServiceDidChangeTemperature:(LeDataService*)service
-{  
-    if (service != currentlyDisplayingService)
-        return;
-    
-    NSInteger currentTemperature = (int)[service temperature];
-    [currentTemperatureLabel setText:[NSString stringWithFormat:@"%dº", currentTemperature]];
-}
-
-
-/** Max or Min change request complete */
-- (void) alarmServiceDidChangeTemperatureBounds:(LeDataService*)service
-{
-    if (service != currentlyDisplayingService) 
-        return;
-    
-    [maxAlarmLabel setText:[NSString stringWithFormat:@"MAX %dº", (int)[currentlyDisplayingService maximumTemperature]]];
-    [minAlarmLabel setText:[NSString stringWithFormat:@"MIN %dº", (int)[currentlyDisplayingService minimumTemperature]]];
-    
-    [maxAlarmStepper setEnabled:YES];
-    [minAlarmStepper setEnabled:YES];
-}
-
-
 /** Peripheral connected or disconnected */
-- (void) alarmServiceDidChangeStatus:(LeDataService*)service
+- (void) serviceDidChangeStatus:(LeDataService*)service
 {
     if ( [[service peripheral] isConnected] ) {
         NSLog(@"Service (%@) connected", service.peripheral.name);
@@ -265,13 +143,17 @@
     }
 }
 
+/** Received Data */
+- (void) serviceDidReceiveData:(NSData*)data fromService:(LeDataService*)service
+{
+    
+}
 
 /** Central Manager reset */
-- (void) alarmServiceDidReset
+- (void) serviceDidReset
 {
     [connectedServices removeAllObjects];
 }
-
 
 
 #pragma mark -
@@ -305,17 +187,20 @@
     else
         [[cell textLabel] setText:@"Peripheral"];
 		
-    [[cell detailTextLabel] setText: [peripheral isConnected] ? @"Connected" : @"Not connected"];
-    
+    if([peripheral isConnected]){
+        [[cell detailTextLabel] setText:@"Connected"];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    }else{
+        [[cell detailTextLabel] setText:@"Not Connected"];
+        cell.accessoryType = UITableViewCellAccessoryNone;
+    }
 	return cell;
 }
-
 
 - (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
 {
 	return 2;
 }
-
 
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -329,7 +214,6 @@
 	return res;
 }
 
-
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {  
 	CBPeripheral	*peripheral;
@@ -337,44 +221,34 @@
 	NSInteger		row	= [indexPath row];
 	
 	if ([indexPath section] == 0) {
+        //second touch
 		devices = [[LeDiscovery sharedInstance] connectedServices];
         peripheral = [(LeDataService*)[devices objectAtIndex:row] peripheral];
 	} else {
+        //first touch
 		devices = [[LeDiscovery sharedInstance] foundPeripherals];
     	peripheral = (CBPeripheral*)[devices objectAtIndex:row];
 	}
     
 	if (![peripheral isConnected]) {
+        //first touch
 		[[LeDiscovery sharedInstance] connectPeripheral:peripheral];
-        [currentlyConnectedSensor setText:[peripheral name]];
-        
-        [currentlyConnectedSensor setEnabled:NO];
-        [currentTemperatureLabel setEnabled:NO];
-        [maxAlarmLabel setEnabled:NO];
-        [minAlarmLabel setEnabled:NO];
-    }
-    
-	else {
+
+    }else {
         
         if ( currentlyDisplayingService != nil ) {
             [currentlyDisplayingService release];
             currentlyDisplayingService = nil;
         }
         
+        //second touch
         currentlyDisplayingService = [self serviceForPeripheral:peripheral];
         [currentlyDisplayingService retain];
         
-        [currentlyConnectedSensor setText:[peripheral name]];
-        
-        [currentTemperatureLabel setText:[NSString stringWithFormat:@"%dº", (int)[currentlyDisplayingService temperature]]];
-        [maxAlarmLabel setText:[NSString stringWithFormat:@"MAX %dº", (int)[currentlyDisplayingService maximumTemperature]]];
-        [minAlarmLabel setText:[NSString stringWithFormat:@"MIN %dº", (int)[currentlyDisplayingService minimumTemperature]]];
-        
-        [currentlyConnectedSensor setEnabled:YES];
-        [currentTemperatureLabel setEnabled:YES];
-        [maxAlarmLabel setEnabled:YES];
-        [minAlarmLabel setEnabled:YES];
+        //todo, SUPPOSED to this this from IB but fuck if I know how
+        [self performSegueWithIdentifier: @"deviceView" sender:self];
     }
+
 }
 
 
@@ -397,23 +271,4 @@
     [alertView release];
 }
 
-
-
-#pragma mark -
-#pragma mark App IO
-/****************************************************************************/
-/*                              App IO Methods                              */
-/****************************************************************************/
-/** Increase or decrease the maximum alarm setting */
-- (IBAction) maxStepperChanged
-{
-    [currentlyDisplayingService reportFirmware];
-}
-
-
-/** Increase or decrease the minimum alarm setting */
-- (IBAction) minStepperChanged
-{
-    [currentlyDisplayingService pinStateQuery:13];
-}
 @end

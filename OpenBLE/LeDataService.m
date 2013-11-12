@@ -55,12 +55,12 @@ NSString *kDataServiceEnteredForegroundNotification = @"kDataServiceEnteredForeg
     self = [super init];
     if (self) {
         
-        servicePeripheral = [peripheral retain];
+        servicePeripheral = peripheral;
         [servicePeripheral setDelegate:self];
 		peripheralDelegate = controller;
         
-        writeUUID	= [[CBUUID UUIDWithString:kWriteCharacteristicUUIDString] retain];
-        readUUID	= [[CBUUID UUIDWithString:kReadCharacteristicUUIDString] retain];
+        writeUUID	= [CBUUID UUIDWithString:kWriteCharacteristicUUIDString] ;
+        readUUID	= [CBUUID UUIDWithString:kReadCharacteristicUUIDString] ;
 	}
     return self;
 }
@@ -69,21 +69,18 @@ NSString *kDataServiceEnteredForegroundNotification = @"kDataServiceEnteredForeg
 - (void) dealloc {
 	if (servicePeripheral) {
 		[servicePeripheral setDelegate:[LeDiscovery sharedInstance]];
-		[servicePeripheral release];
+
 		servicePeripheral = nil;
         
-        [writeUUID release];
-        [readUUID release];
         
     }
-    [super dealloc];
+
 }
 
 
 - (void) reset
 {
 	if (servicePeripheral) {
-		[servicePeripheral release];
 		servicePeripheral = nil;
 	}
 }
@@ -171,12 +168,12 @@ NSString *kDataServiceEnteredForegroundNotification = @"kDataServiceEnteredForeg
         
 		if ([[characteristic UUID] isEqual:readUUID]) { // Read
             NSLog(@"Discovered Read Characteristic");
-			readCharacteristic = [characteristic retain];
+			readCharacteristic = characteristic;
             [peripheral setNotifyValue:YES forCharacteristic:characteristic];
 		}
         else if ([[characteristic UUID] isEqual:writeUUID]) { // Write
             NSLog(@"Discovered Write Characteristic");
-			writeCharacteristic = [characteristic retain];
+			writeCharacteristic = characteristic;
 		} 
 	}
 }

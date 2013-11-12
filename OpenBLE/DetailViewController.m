@@ -84,8 +84,8 @@
     if (service != currentlyDisplayingService)
         return;
     
-    NSString* newStr = [[[NSString alloc] initWithData:data
-                                              encoding:NSUTF8StringEncoding] autorelease];
+    NSString* newStr = [[NSString alloc] initWithData:data
+                                              encoding:NSUTF8StringEncoding] ;
     
     [response setText:newStr];
 }

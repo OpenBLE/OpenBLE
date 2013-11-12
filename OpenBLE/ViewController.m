@@ -69,13 +69,6 @@
 {
     [[LeDiscovery sharedInstance] stopScanning];
     
-
-    [sensorsTable release];
-
-    [connectedServices release];
-    [currentlyDisplayingService release];
-    
-    [super dealloc];
 }
 
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
@@ -171,7 +164,7 @@
     
 	cell = [tableView dequeueReusableCellWithIdentifier:cellID];
 	if (!cell)
-		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellID] autorelease];
+		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellID] ;
     
 	if ([indexPath section] == 0) {
 		devices = [[LeDiscovery sharedInstance] connectedServices];
@@ -237,13 +230,11 @@
     }else {
         
         if ( currentlyDisplayingService != nil ) {
-            [currentlyDisplayingService release];
             currentlyDisplayingService = nil;
         }
         
         //second touch
         currentlyDisplayingService = [self serviceForPeripheral:peripheral];
-        [currentlyDisplayingService retain];
         
         //todo, SUPPOSED to this this from IB but fuck if I know how
         [self performSegueWithIdentifier: @"deviceView" sender:self];
@@ -268,7 +259,6 @@
     NSString *message   = @"You must turn on Bluetooth in Settings in order to use LE";
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alertView show];
-    [alertView release];
 }
 
 @end

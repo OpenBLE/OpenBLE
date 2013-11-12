@@ -63,7 +63,6 @@
 {
     // We are a singleton and as such, dealloc shouldn't be called.
     assert(NO);
-    [super dealloc];
 }
 
 
@@ -92,7 +91,7 @@
         if (!uuid)
             continue;
         
-        [centralManager retrievePeripherals:[NSArray arrayWithObject:(id)uuid]];
+        [centralManager retrievePeripherals:[NSArray arrayWithObject:(__bridge id)uuid]];
         CFRelease(uuid);
     }
 
@@ -114,7 +113,7 @@
     
     uuidString = CFUUIDCreateString(NULL, uuid);
     if (uuidString) {
-        [newDevices addObject:(NSString*)uuidString];
+        [newDevices addObject:(__bridge NSString*)uuidString];
         CFRelease(uuidString);
     }
     /* Store */
@@ -134,7 +133,7 @@
 
 		uuidString = CFUUIDCreateString(NULL, uuid);
 		if (uuidString) {
-			[newDevices removeObject:(NSString*)uuidString];
+			[newDevices removeObject:(__bridge NSString*)uuidString];
             CFRelease(uuidString);
         }
 		/* Store */
@@ -233,7 +232,7 @@
 	LeDataService	*service	= nil;
 	
 	/* Create a service instance. */
-	service = [[[LeDataService alloc] initWithPeripheral:peripheral controller:peripheralDelegate] autorelease];
+	service = [[LeDataService alloc] initWithPeripheral:peripheral controller:peripheralDelegate] ;
 	[service start];
 
 	if (![connectedServices containsObject:service])

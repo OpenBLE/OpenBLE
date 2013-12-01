@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import "LeDataService.h"
+#import "LeDiscovery.h"
 
-@interface DetailViewController : UIViewController  <LeDataProtocol>
+@interface DetailViewController : UIViewController  <LeDiscoveryDelegate, LeServiceDelegate, LeDataProtocol>
 
 @property (strong, nonatomic) LeDataService             *currentlyDisplayingService;
 @property (strong, nonatomic) IBOutlet UILabel          *currentlyConnectedSensor;

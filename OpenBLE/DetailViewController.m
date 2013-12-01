@@ -90,6 +90,12 @@
     [response setText:newStr];
 }
 
+
+#pragma mark -
+#pragma mark LeService Delegate Methods
+/****************************************************************************/
+/*				LeServiceDelegate Delegate Methods                                */
+/****************************************************************************/
 /** Central Manager reset */
 - (void) serviceDidReset
 {
@@ -107,8 +113,27 @@
     
     else {
         NSLog(@"Service (%@) disconnected", service.peripheral.name);
+        [[self navigationController] popToRootViewControllerAnimated:YES];
 
     }
+}
+
+
+#pragma mark -
+#pragma mark LeDiscoveryDelegate
+/****************************************************************************/
+/*                       LeDiscoveryDelegate Methods                        */
+/****************************************************************************/
+- (void) discoveryDidRefresh
+{
+}
+
+- (void) discoveryStatePoweredOff
+{
+    NSString *title     = @"Bluetooth Power";
+    NSString *message   = @"You must turn on Bluetooth in Settings in order to use LE";
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    [alertView show];
 }
 
 @end

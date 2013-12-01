@@ -1,8 +1,8 @@
 /*
-
+ 
  File: LeDiscovery.m
  
- Abstract: Scan for and discover nearby LE peripherals with the 
+ Abstract: Scan for and discover nearby LE peripherals with the
  matching service UUID.
  
  
@@ -37,10 +37,10 @@
 + (id) sharedInstance
 {
 	static LeDiscovery	*this	= nil;
-
+    
 	if (!this)
 		this = [[LeDiscovery alloc] init];
-
+    
 	return this;
 }
 
@@ -51,7 +51,7 @@
     if (self) {
 		pendingInit = YES;
 		centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:dispatch_get_main_queue()];
-
+        
 		foundPeripherals = [[NSMutableArray alloc] init];
 		connectedServices = [[NSMutableArray alloc] init];
 	}
@@ -76,12 +76,12 @@
 - (void) loadSavedDevices
 {
 	NSArray	*storedDevices	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
-
+    
 	if (![storedDevices isKindOfClass:[NSArray class]]) {
         NSLog(@"No stored array to load");
         return;
     }
-     
+    
     for (id deviceUUIDString in storedDevices) {
         
         if (![deviceUUIDString isKindOfClass:[NSString class]])
@@ -94,7 +94,7 @@
         [centralManager retrievePeripherals:[NSArray arrayWithObject:(__bridge id)uuid]];
         CFRelease(uuid);
     }
-
+    
 }
 
 
@@ -103,12 +103,12 @@
 	NSArray			*storedDevices	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
 	NSMutableArray	*newDevices		= nil;
 	CFStringRef		uuidString		= NULL;
-
+    
 	if (![storedDevices isKindOfClass:[NSArray class]]) {
         NSLog(@"Can't find/create an array to store the uuid");
         return;
     }
-
+    
     newDevices = [NSMutableArray arrayWithArray:storedDevices];
     
     uuidString = CFUUIDCreateString(NULL, uuid);
@@ -127,10 +127,10 @@
 	NSArray			*storedDevices	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
 	NSMutableArray	*newDevices		= nil;
 	CFStringRef		uuidString		= NULL;
-
+    
 	if ([storedDevices isKindOfClass:[NSArray class]]) {
 		newDevices = [NSMutableArray arrayWithArray:storedDevices];
-
+        
 		uuidString = CFUUIDCreateString(NULL, uuid);
 		if (uuidString) {
 			[newDevices removeObject:(__bridge NSString*)uuidString];
@@ -234,13 +234,13 @@
 	/* Create a service instance. */
 	service = [[LeDataService alloc] initWithPeripheral:peripheral controller:peripheralDelegate] ;
 	[service start];
-
+    
 	if (![connectedServices containsObject:service])
 		[connectedServices addObject:service];
-
+    
 	if ([foundPeripherals containsObject:peripheral])
 		[foundPeripherals removeObject:peripheral];
-
+    
     [peripheralDelegate serviceDidChangeStatus:service];
 	[discoveryDelegate discoveryDidRefresh];
 }
@@ -255,7 +255,7 @@
 - (void) centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
 {
 	LeDataService	*service	= nil;
-
+    
 	for (service in connectedServices) {
 		if ([service peripheral] == peripheral) {
 			[connectedServices removeObject:service];
@@ -263,7 +263,7 @@
 			break;
 		}
 	}
-
+    
 	[discoveryDelegate discoveryDidRefresh];
 }
 

@@ -16,7 +16,7 @@
 #import "DetailViewController.h"
 
 
-@interface ViewController ()  <LeDiscoveryDelegate, LeDataProtocol, UITableViewDataSource, UITableViewDelegate>
+@interface ViewController ()  <LeDiscoveryDelegate, LeServiceDelegate, UITableViewDataSource, UITableViewDelegate>
 @property (retain, nonatomic) LeDataService *currentlyDisplayingService;
 @property (retain, nonatomic) NSMutableArray            *connectedServices;
 @property (retain, nonatomic) IBOutlet UITableView      *sensorsTable;
@@ -77,6 +77,9 @@
     dest.currentlyDisplayingService = currentlyDisplayingService;
     [currentlyDisplayingService setController:dest];
     
+    //tell Discovery to that it should report to destination when its peripheral changes status
+    [[LeDiscovery sharedInstance] setPeripheralDelegate:dest];
+
 }
 
 

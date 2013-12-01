@@ -17,9 +17,9 @@
 /****************************************************************************/
 /*						Service Characteristics								*/
 /****************************************************************************/
-extern NSString *kTemperatureServiceUUIDString;                 // FFF0     Service UUID
-extern NSString *kWriteCharacteristicUUIDString;                // FFF2     Write Characteristic
-extern NSString *kReadCharacteristicUUIDString;                 // FFF1     Read Characteristic
+extern NSString *kDataServiceUUIDString;
+extern NSString *kWriteCharacteristicUUIDString;
+extern NSString *kReadCharacteristicUUIDString;
 
 extern NSString *kDataServiceEnteredBackgroundNotification;
 extern NSString *kDataServiceEnteredForegroundNotification;

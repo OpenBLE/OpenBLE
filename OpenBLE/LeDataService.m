@@ -71,14 +71,14 @@ NSString *kDataServiceEnteredForegroundNotification = @"kDataServiceEnteredForeg
         kPeripheralUUIDString = (__bridge_transfer NSString *)CFUUIDCreateString(NULL, peripheral.UUID);
 
         if([peripheral.name isEqualToString:RedbearPeripheralNameString]){
-            kWriteCharacteristicUUIDString = kPeripheralUUIDString;
+            kWriteCharacteristicUUIDString = RedbearWriteCharacteristicUUIDString;
             kDataServiceUUIDString = RedbearDataServiceUUIDString;
             writeUUID	= [CBUUID UUIDWithString:RedbearWriteCharacteristicUUIDString] ;
             readUUID	= [CBUUID UUIDWithString:RedbearReadCharacteristicUUIDString] ;
         }else
         {
             kWriteCharacteristicUUIDString = XadowWriteCharacteristicUUIDString;
-            kDataServiceUUIDString = kPeripheralUUIDString;
+            kDataServiceUUIDString = XadowDataServiceUUIDString;
             writeUUID	= [CBUUID UUIDWithString:XadowWriteCharacteristicUUIDString] ;
             readUUID	= [CBUUID UUIDWithString:XadowReadCharacteristicUUIDString] ;
         }

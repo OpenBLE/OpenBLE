@@ -164,22 +164,18 @@
 /****************************************************************************/
 - (void) serviceDidReceiveCharacteristicsFromService:(LeDataService*)service
 {
-    if(currentlyDisplayingService == service){
-        [self performSegueWithIdentifier: @"deviceView" sender:self];
+    NSLog(@"Service (%@) did receive characteristics", service.peripheral.name);
+    if (![connectedServices containsObject:service]) {
+        [connectedServices addObject:service];
     }
+    currentlyDisplayingService = service;
+    [self performSegueWithIdentifier: @"deviceView" sender:self];
 }
 
 /** Peripheral connected or disconnected */
 - (void) serviceDidChangeStatus:(LeDataService*)service
 {
-    if ( [[service peripheral] isConnected] ) {
-        NSLog(@"Service (%@) connected", service.peripheral.name);
-        if (![connectedServices containsObject:service]) {
-            [connectedServices addObject:service];
-        }
-    }
-    
-    else {
+    if ( ![[service peripheral] isConnected] ) {
         NSLog(@"Service (%@) disconnected", service.peripheral.name);
         if ([connectedServices containsObject:service]) {
             [connectedServices removeObject:service];
@@ -278,7 +274,6 @@
         //found devices, send off connect which will segue if successful
 		devices = [[LeDiscovery sharedInstance] foundPeripherals];
     	peripheral = (CBPeripheral*)[devices objectAtIndex:row];
-        currentlyDisplayingService = [self serviceForPeripheral:peripheral];
         [[LeDiscovery sharedInstance] connectPeripheral:peripheral];
 	}
 }

@@ -162,6 +162,13 @@
 /****************************************************************************/
 /*				LeDataProtocol Delegate Methods                             */
 /****************************************************************************/
+- (void) serviceDidReceiveCharacteristicsFromService:(LeDataService*)service
+{
+    if(currentlyDisplayingService == service){
+        [self performSegueWithIdentifier: @"deviceView" sender:self];
+    }
+}
+
 /** Peripheral connected or disconnected */
 - (void) serviceDidChangeStatus:(LeDataService*)service
 {
@@ -169,7 +176,6 @@
         NSLog(@"Service (%@) connected", service.peripheral.name);
         if (![connectedServices containsObject:service]) {
             [connectedServices addObject:service];
-            [self performSegueWithIdentifier: @"deviceView" sender:self];
         }
     }
     

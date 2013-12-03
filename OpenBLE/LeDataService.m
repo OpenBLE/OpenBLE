@@ -199,6 +199,12 @@ NSString *kDataServiceEnteredForegroundNotification = @"kDataServiceEnteredForeg
 			writeCharacteristic = characteristic;
 		} 
 	}
+    
+    //check if we've found all services we need for this device and call delegate
+    if(readCharacteristic && writeCharacteristic)
+    {
+        [peripheralDelegate serviceDidReceiveCharacteristicsFromService:self];
+    }
 }
 
 

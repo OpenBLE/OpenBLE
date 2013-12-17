@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
                    DESC
 
   s.homepage     = "http://openble.github.com"
-  s.screenshots  = "http://openble.github.com/img/scanner.png", "http://openble.github.com/detail.png"
+  s.screenshots  = "http://openble.github.com/images/scanner.png", "http://openble.github.com/images/detail.png"
 
   s.license      = 'Apache 2.0'
 
@@ -27,5 +27,7 @@ Pod::Spec.new do |s|
   s.source_files  = 'Classes', 'Classes/**/*.{h,m}'
 
   s.framework  = 'CoreBluetooth'
+  
+  s.requires_arc = true
 
 end

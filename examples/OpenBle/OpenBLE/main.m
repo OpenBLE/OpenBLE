@@ -1,10 +1,10 @@
-//
-//  main.m
-//  OpenBLE
-//
-//  Created by Jacob on 11/12/13.
-//  Copyright (c) 2013 Apple Inc. All rights reserved.
-//
+/*
+ 
+ File: main.m
+ 
+ Abstract: Boilerplate Apple main.m
+ 
+ */
 
 #import <UIKit/UIKit.h>
 

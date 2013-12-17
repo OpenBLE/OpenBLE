@@ -5,7 +5,6 @@
  Abstract: User interface to display a list of discovered peripherals
  and allow the user to connect to them.
  
- 
  */
 
 #import <Foundation/Foundation.h>
@@ -14,7 +13,6 @@
 #import "LeDiscovery.h"
 #import "LeDataService.h"
 #import "DetailViewController.h"
-
 
 @interface ViewController ()  <LeDiscoveryDelegate, LeServiceDelegate, UITableViewDataSource, UITableViewDelegate>
 @property (retain, nonatomic) LeDataService             *currentlyDisplayingService;

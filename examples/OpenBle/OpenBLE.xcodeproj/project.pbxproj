@@ -14,9 +14,8 @@
 		5B158E7518321E53006EE7C2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B158E7418321E53006EE7C2 /* main.m */; };
 		5B158E7918321E53006EE7C2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B158E7818321E53006EE7C2 /* AppDelegate.m */; };
 		5B158E7B18321E53006EE7C2 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5B158E7A18321E53006EE7C2 /* Images.xcassets */; };
+		5B22D6D5185FFF510067D75A /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B22D6D4185FFF510067D75A /* libPods.a */; };
 		5B4BCB3E18321E8500ADAE0E /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B4BCB3918321E8500ADAE0E /* DetailViewController.m */; };
-		5B4BCB3F18321E8500ADAE0E /* LeDataService.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B4BCB3B18321E8500ADAE0E /* LeDataService.m */; };
-		5B4BCB4018321E8500ADAE0E /* LeDiscovery.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B4BCB3D18321E8500ADAE0E /* LeDiscovery.m */; };
 		5B4BCB4318321E8B00ADAE0E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B4BCB4218321E8B00ADAE0E /* ViewController.m */; };
 		5B4BCB4718321ECD00ADAE0E /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5B4BCB4518321ECD00ADAE0E /* MainStoryboard.storyboard */; };
 		5B4BCB48183220F200ADAE0E /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BA1100418321D1E00A5398C /* CoreBluetooth.framework */; };
@@ -32,21 +31,19 @@
 		5B158E7818321E53006EE7C2 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		5B158E7A18321E53006EE7C2 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		5B158E8118321E53006EE7C2 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		5B4AE3F7182F88C700E9DD0A /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		5B22D6D4185FFF510067D75A /* libPods.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPods.a; path = "Pods/build/Debug-iphoneos/libPods.a"; sourceTree = "<group>"; };
+		5B4AE3F7182F88C700E9DD0A /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "OpenBLE/Default-568h@2x.png"; sourceTree = "<group>"; };
 		5B4BCB3818321E8500ADAE0E /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		5B4BCB3918321E8500ADAE0E /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
-		5B4BCB3A18321E8500ADAE0E /* LeDataService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeDataService.h; sourceTree = "<group>"; };
-		5B4BCB3B18321E8500ADAE0E /* LeDataService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeDataService.m; sourceTree = "<group>"; };
-		5B4BCB3C18321E8500ADAE0E /* LeDiscovery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeDiscovery.h; sourceTree = "<group>"; };
-		5B4BCB3D18321E8500ADAE0E /* LeDiscovery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeDiscovery.m; sourceTree = "<group>"; };
 		5B4BCB4118321E8B00ADAE0E /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		5B4BCB4218321E8B00ADAE0E /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		5B4BCB4618321ECD00ADAE0E /* en */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = en; path = en.lproj/MainStoryboard.storyboard; sourceTree = "<group>"; };
 		5BA1100418321D1E00A5398C /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		AFC26E71F6AC49E38272C12C /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
+		B3391203DC3949449929543D /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B9182534148D762600D6064E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		B9182536148D762600D6064E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B9182538148D762600D6064E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		B9ADCFD41497DA600098522D /* ReadMe.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReadMe.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5B22D6D5185FFF510067D75A /* libPods.a in Frameworks */,
 				5B4BCB48183220F200ADAE0E /* CoreBluetooth.framework in Frameworks */,
 				5B158E6C18321E53006EE7C2 /* CoreGraphics.framework in Frameworks */,
 				5B158E6D18321E53006EE7C2 /* UIKit.framework in Frameworks */,
@@ -67,7 +65,6 @@
 		5B158E6E18321E53006EE7C2 /* OpenBLE */ = {
 			isa = PBXGroup;
 			children = (
-				5B4BCB4418321E9800ADAE0E /* LE */,
 				5B158E7718321E53006EE7C2 /* AppDelegate.h */,
 				5B158E7818321E53006EE7C2 /* AppDelegate.m */,
 				5B4BCB4118321E8B00ADAE0E /* ViewController.h */,
@@ -92,25 +89,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		5B4BCB4418321E9800ADAE0E /* LE */ = {
-			isa = PBXGroup;
-			children = (
-				5B4BCB3A18321E8500ADAE0E /* LeDataService.h */,
-				5B4BCB3B18321E8500ADAE0E /* LeDataService.m */,
-				5B4BCB3C18321E8500ADAE0E /* LeDiscovery.h */,
-				5B4BCB3D18321E8500ADAE0E /* LeDiscovery.m */,
-			);
-			name = LE;
-			sourceTree = "<group>";
-		};
 		B9182525148D762500D6064E = {
 			isa = PBXGroup;
 			children = (
 				5B4AE3F7182F88C700E9DD0A /* Default-568h@2x.png */,
-				B9ADCFD41497DA600098522D /* ReadMe.txt */,
 				5B158E6E18321E53006EE7C2 /* OpenBLE */,
 				B9182533148D762600D6064E /* Frameworks */,
 				B9182531148D762600D6064E /* Products */,
+				AFC26E71F6AC49E38272C12C /* Pods.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -125,11 +111,13 @@
 		B9182533148D762600D6064E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5B22D6D4185FFF510067D75A /* libPods.a */,
 				5BA1100418321D1E00A5398C /* CoreBluetooth.framework */,
 				B9182534148D762600D6064E /* UIKit.framework */,
 				B9182536148D762600D6064E /* Foundation.framework */,
 				B9182538148D762600D6064E /* CoreGraphics.framework */,
 				5B158E8118321E53006EE7C2 /* XCTest.framework */,
+				B3391203DC3949449929543D /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -141,9 +129,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5B158E8F18321E54006EE7C2 /* Build configuration list for PBXNativeTarget "OpenBLE" */;
 			buildPhases = (
+				5F4B964458A145B1BB6EE355 /* Check Pods Manifest.lock */,
 				5B158E6618321E53006EE7C2 /* Sources */,
 				5B158E6718321E53006EE7C2 /* Frameworks */,
 				5B158E6818321E53006EE7C2 /* Resources */,
+				FCFF2B3E6FD54318B8BCBF94 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -193,6 +183,39 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		5F4B964458A145B1BB6EE355 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		FCFF2B3E6FD54318B8BCBF94 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		5B158E6618321E53006EE7C2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -200,9 +223,7 @@
 			files = (
 				5B4BCB4318321E8B00ADAE0E /* ViewController.m in Sources */,
 				5B158E7918321E53006EE7C2 /* AppDelegate.m in Sources */,
-				5B4BCB4018321E8500ADAE0E /* LeDiscovery.m in Sources */,
 				5B158E7518321E53006EE7C2 /* main.m in Sources */,
-				5B4BCB3F18321E8500ADAE0E /* LeDataService.m in Sources */,
 				5B4BCB3E18321E8500ADAE0E /* DetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -231,6 +252,7 @@
 /* Begin XCBuildConfiguration section */
 		5B158E9018321E54006EE7C2 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AFC26E71F6AC49E38272C12C /* Pods.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -250,6 +272,10 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				INFOPLIST_FILE = "OpenBLE/OpenBLE-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/jacobrosenthal/Documents/Code/OpenBLE/examples/OpenBle/Pods/build/Debug-iphoneos",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
@@ -258,6 +284,7 @@
 		};
 		5B158E9118321E54006EE7C2 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AFC26E71F6AC49E38272C12C /* Pods.xcconfig */;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -274,6 +301,10 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				INFOPLIST_FILE = "OpenBLE/OpenBLE-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"/Users/jacobrosenthal/Documents/Code/OpenBLE/examples/OpenBle/Pods/build/Debug-iphoneos",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;

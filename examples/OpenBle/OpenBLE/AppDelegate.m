@@ -1,14 +1,13 @@
-//
-//  AppDelegate.m
-//  OpenBLE
-//
-//  Created by Jacob on 11/12/13.
-//  Copyright (c) 2013 Apple Inc. All rights reserved.
-//
+/*
+ 
+ File: AppDelegate.m
+ 
+ Abstract: Boilerplate Appl AppDelegate
+ 
+ */
 
 #import "AppDelegate.h"
 #import "LeDataService.h"   // For the Notification strings
-
 
 @implementation AppDelegate
 

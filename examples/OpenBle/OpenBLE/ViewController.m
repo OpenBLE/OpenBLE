@@ -276,6 +276,46 @@
 	}
 }
 
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+    CBPeripheral	*peripheral;
+	NSArray			*devices;
+    
+    //if device isnt connected we get bounds exception for array
+    @try
+    {
+        devices = [[LeDiscovery sharedInstance] connectedServices];
+        peripheral = [(LeDataService*)[devices objectAtIndex:indexPath.row] peripheral];
+        
+        if([peripheral isConnected]){
+            return YES;
+        }else{
+            return NO;
+        }
+    }
+    @catch(NSException* ex)
+    {
+        return NO;
+    }
+    
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    CBPeripheral	*peripheral;
+	NSArray			*devices;
+    devices = [[LeDiscovery sharedInstance] connectedServices];
+    peripheral = [(LeDataService*)[devices objectAtIndex:indexPath.row] peripheral];
+    
+    [[LeDiscovery sharedInstance] disconnectPeripheral:peripheral];
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return @"disconnect";
+}
+
 
 #pragma mark -
 #pragma mark LeDiscoveryDelegate 

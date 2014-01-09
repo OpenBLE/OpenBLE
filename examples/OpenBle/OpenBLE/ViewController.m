@@ -46,6 +46,7 @@
     return self;
 }
 
+//stuff that needs to happen once
 - (void) viewDidLoad
 {
     [super viewDidLoad];
@@ -53,14 +54,19 @@
     connectedServices = [NSMutableArray new];
     
 	[[LeDiscovery sharedInstance] setDiscoveryDelegate:self];
-    [[LeDiscovery sharedInstance] setPeripheralDelegate:self];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterBackgroundNotification:) name:kDataServiceEnteredBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterForegroundNotification:) name:kDataServiceEnteredForegroundNotification object:nil];
     
     [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
     
-    [self refresh:nil];
+}
+
+//stuff that needs to happen every time we come back to this view controller
+-(void)viewWillAppear:(BOOL)animated
+{
+    
+    [self reset:nil];
 }
 
 - (void) viewDidUnload
@@ -87,6 +93,7 @@
     
 }
 
+//turn stuff off before we move to next view
 - (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
     
     DetailViewController *dest =[segue destinationViewController];
@@ -97,8 +104,10 @@
     [[LeDiscovery sharedInstance] setPeripheralDelegate:dest];
 
     [[LeDiscovery sharedInstance] stopScanning];
+    [self.refreshControl endRefreshing];
 }
 
+//initiate refresh, we only do this programmatically, but is normally called by pulling down on table
 - (IBAction)refresh:(id)sender {
     [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
     

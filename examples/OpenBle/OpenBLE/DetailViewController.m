@@ -14,6 +14,9 @@
 @synthesize currentlyDisplayingService;
 @synthesize currentlyConnectedSensor;
 @synthesize response;
+@synthesize input;
+@synthesize scrollView;
+@synthesize activeField;
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -32,6 +35,19 @@
 - (void) viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self registerForKeyboardNotifications];
+    
+    //fix for uiscrollview
+    //http://stackoverflow.com/questions/8528134/uiscrollview-not-scrolling-when-keyboard-covers-active-uitextfield-using-apple
+    CGRect applicationFrame = [[UIScreen mainScreen] applicationFrame];
+    CGRect navigationFrame = [[self.navigationController navigationBar] frame];
+    CGFloat height = applicationFrame.size.height - navigationFrame.size.height;
+    CGSize newContentSize = CGSizeMake(applicationFrame.size.width, height);
+    
+    scrollView.contentSize = newContentSize;
+    //end
+
     
     currentlyConnectedSensor.text = [[currentlyDisplayingService peripheral] name];
 }
@@ -57,19 +73,16 @@
 /****************************************************************************/
 -(IBAction)send:(id)sender
 {
-    UITextField *input = (UITextField*)sender;
-    [sender resignFirstResponder];
-    NSLog(@"Sending ascii: %@", [input text]);
     
     NSData* tosend=[[input text] dataUsingEncoding:NSUTF8StringEncoding];
     
     [currentlyDisplayingService write:tosend];
     
-}
+    NSString* newStr = [[NSString alloc] initWithFormat:@"< %@\n",[input text]] ;
 
--(IBAction)dismissKeyboard:(id)sender
-{
-    [sender resignFirstResponder];
+    [response setText:[newStr stringByAppendingString:response.text]];
+
+    
 }
 
 
@@ -87,7 +100,10 @@
     NSString* newStr = [[NSString alloc] initWithData:data
                                               encoding:NSUTF8StringEncoding] ;
     
-    [response setText:newStr];
+    NSString* newStr2 = [[NSString alloc] initWithFormat:@"> %@",newStr] ;
+
+    [response setText:[newStr2 stringByAppendingString:response.text]];
+    
 }
 
 //if your service supports writewithresponse, this confirms the data was received with ack
@@ -141,6 +157,73 @@
     NSString *message   = @"You must turn on Bluetooth in Settings in order to use LE";
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alertView show];
+}
+
+
+#pragma mark -
+#pragma mark UI Text Field Delegates
+/****************************************************************************/
+/*                        UI Text Field Methods                             */
+/****************************************************************************/
+-(BOOL) textFieldShouldReturn:(UITextField *)textField{
+    
+    [input resignFirstResponder];
+    return YES;
+}
+
+// Call this method somewhere in your view controller setup code.
+- (void)registerForKeyboardNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWasShown:)
+                                                 name:UIKeyboardDidShowNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillBeHidden:)
+                                                 name:UIKeyboardWillHideNotification object:nil];
+    
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
+                                   initWithTarget:self
+                                   action:@selector(textFieldShouldReturn:)];
+    [self.view addGestureRecognizer:tap];
+    
+}
+
+// Called when the UIKeyboardDidShowNotification is sent.
+- (void)keyboardWasShown:(NSNotification*)aNotification
+{
+    NSDictionary* info = [aNotification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    
+    UIEdgeInsets contentInsets = UIEdgeInsetsMake(0.0, 0.0, kbSize.height, 0.0);
+    scrollView.contentInset = contentInsets;
+    scrollView.scrollIndicatorInsets = contentInsets;
+    
+    // If active text field is hidden by keyboard, scroll it so it's visible
+    // Your app might not need or want this behavior.
+    CGRect aRect = self.view.frame;
+    aRect.size.height -= kbSize.height;
+    if (!CGRectContainsPoint(aRect, activeField.frame.origin) ) {
+        [self.scrollView scrollRectToVisible:activeField.frame animated:YES];
+    }
+}
+
+// Called when the UIKeyboardWillHideNotification is sent
+- (void)keyboardWillBeHidden:(NSNotification*)aNotification
+{
+    UIEdgeInsets contentInsets = UIEdgeInsetsZero;
+    scrollView.contentInset = contentInsets;
+    scrollView.scrollIndicatorInsets = contentInsets;
+}
+
+- (IBAction)textFieldDidBeginEditing:(UITextField *)textField
+{
+    activeField = textField;
+}
+
+- (IBAction)textFieldDidEndEditing:(UITextField *)textField
+{
+    activeField = nil;
 }
 
 @end

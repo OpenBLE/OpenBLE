@@ -90,6 +90,13 @@
     [response setText:newStr];
 }
 
+//if your service supports writewithresponse, this confirms the data was received with ack
+//otherwise just returns after an attempted send with error nil
+//very helpful in metering a large batch of sends so you don't overwhelm the device's receive buffer
+-(void)didWriteFromService:(LeDataService *)service withError:(NSError *)error{
+    
+}
+
 
 #pragma mark -
 #pragma mark LeService Delegate Methods

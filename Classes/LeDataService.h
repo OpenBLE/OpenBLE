@@ -34,6 +34,7 @@ extern NSString *kDataServiceEnteredForegroundNotification;
 - (void) serviceDidReceiveCharacteristicsFromService:(LeDataService*)service;
 - (void) serviceDidChangeStatus:(LeDataService*)service;
 - (void) serviceDidReset;
+- (void) didWriteFromService:(LeDataService *)service withError:(NSError *)error;
 @end
 
 

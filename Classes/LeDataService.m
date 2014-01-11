@@ -308,8 +308,6 @@ NSString *kDataServiceEnteredForegroundNotification = @"kDataServiceEnteredForeg
 
 - (void) peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
-    /* When a write occurs, need to set off a re-read of the local CBCharacteristic to update its value */
-    //[peripheral readValueForCharacteristic:characteristic];
-
+    [peripheralDelegate didWriteFromService:self withError:error];
 }
 @end

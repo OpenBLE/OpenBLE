@@ -234,6 +234,7 @@ NSString *kDataServiceEnteredForegroundNotification = @"kDataServiceEnteredForeg
 
     if([kDataServiceUUIDString isEqualToString:RedbearDataServiceUUIDString]){
         [servicePeripheral writeValue:data forCharacteristic:writeCharacteristic type:CBCharacteristicWriteWithoutResponse];
+        [peripheralDelegate didWriteFromService:self withError:nil];
     }
     else{
         [servicePeripheral writeValue:data forCharacteristic:writeCharacteristic type:CBCharacteristicWriteWithResponse];

@@ -1,11 +1,10 @@
-/*
- 
- File: ViewController.m
- 
- Abstract: User interface to display a list of discovered peripherals
- and allow the user to connect to them.
- 
- */
+//
+//  ViewController.m
+//  OpenBLE
+//
+//  Created by Jacob on 11/11/13.
+//  Copyright (c) 2013 Augmetous Inc.
+//
 
 #import <Foundation/Foundation.h>
 

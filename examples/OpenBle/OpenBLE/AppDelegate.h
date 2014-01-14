@@ -1,10 +1,10 @@
-/*
- 
- File: AppDelegate.h
- 
- Abstract: Boilerplate Appl AppDelegate
- 
- */
+//
+//  AppDelegate.h
+//  OpenBLE
+//
+//  Created by Jacob on 11/11/13.
+//  Copyright (c) 2013 Augmetous Inc.
+//
 
 #import <UIKit/UIKit.h>
 

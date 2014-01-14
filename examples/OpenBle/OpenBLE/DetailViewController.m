@@ -1,10 +1,10 @@
-/*
- 
- File: DetailViewController.m
- 
- Abstract: User interface to send and receive data from connected peripheral.
-
- */
+//
+//  DetailViewController.m
+//  OpenBLE
+//
+//  Created by Jacob on 11/11/13.
+//  Copyright (c) 2013 Augmetous Inc.
+//
 
 #import "DetailViewController.h"
 #import "LeDataService.h"

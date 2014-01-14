@@ -37,18 +37,14 @@
     currentlyConnectedSensor.text = [[currentlyDisplayingService peripheral] name];
 }
 
-- (void) viewDidUnload
-{
-    [self setCurrentlyConnectedSensor:nil];
-    [self setResponse:nil];
-    [self setCurrentlyDisplayingService:nil];
-    
-    [super viewDidUnload];
-}
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void) dealloc
+{
 }
 
 #pragma mark -

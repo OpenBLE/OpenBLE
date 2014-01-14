@@ -50,14 +50,12 @@
         <!--Detail View Controller - Device View-->
         <scene sceneID="VHE-Mj-FHH">
             <objects>
-                <exit id="zkw-BM-qPF" userLabel="Exit" sceneMemberID="exit"/>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="LIe-5k-il9" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController id="ppv-KU-Dfg" customClass="DetailViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="qkz-fm-bfB">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="480"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="GDs-1h-6ge">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="GDs-1h-6ge" customClass="TPKeyboardAvoidingScrollView">
                                 <rect key="frame" x="0.0" y="-88" width="320" height="568"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <subviews>
@@ -67,10 +65,7 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" returnKeyType="send"/>
                                         <connections>
-                                            <action selector="send:" destination="ppv-KU-Dfg" eventType="editingDidEnd" id="PPX-x1-XGQ"/>
                                             <action selector="send:" destination="ppv-KU-Dfg" eventType="editingDidEndOnExit" id="ltL-Wi-EBk"/>
-                                            <action selector="textFieldDidBeginEditing:" destination="ppv-KU-Dfg" eventType="editingDidBegin" id="eLS-AQ-kRC"/>
-                                            <action selector="textFieldDidEndEditing:" destination="ppv-KU-Dfg" eventType="editingDidEnd" id="QGi-dk-7if"/>
                                             <outlet property="delegate" destination="ppv-KU-Dfg" id="qoP-06-wEO"/>
                                         </connections>
                                     </textField>
@@ -106,9 +101,10 @@
                     <connections>
                         <outlet property="input" destination="2zU-MM-NDF" id="f6a-sD-fbe"/>
                         <outlet property="response" destination="lJR-fr-hck" id="UIa-Y6-f2x"/>
-                        <outlet property="scrollView" destination="GDs-1h-6ge" id="1Ug-gS-qlP"/>
                     </connections>
                 </viewController>
+                <exit id="zkw-BM-qPF" userLabel="Exit" sceneMemberID="exit"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LIe-5k-il9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1222" y="292"/>
         </scene>

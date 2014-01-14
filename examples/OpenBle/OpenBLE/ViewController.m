@@ -16,11 +16,11 @@
 
 @interface ViewController ()  <LeDiscoveryDelegate, LeServiceDelegate, UITableViewDataSource, UITableViewDelegate>
 
-@property (retain, nonatomic) IBOutlet UITableView      *sensorsTable;
+@property (retain, nonatomic) IBOutlet UITableView *sensorsTable;
 @property (retain, nonatomic) IBOutlet UIRefreshControl *refreshControl;
 
-@property (retain, nonatomic) LeDataService             *currentlyDisplayingService;
-@property (retain, nonatomic) NSMutableArray            *connectedServices;
+@property (retain, nonatomic) LeDataService *currentlyDisplayingService;
+@property (retain, nonatomic) NSMutableArray *connectedServices;
 
 @end
 

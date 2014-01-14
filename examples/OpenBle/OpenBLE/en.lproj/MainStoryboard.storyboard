@@ -57,10 +57,10 @@
                         <subviews>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="GDs-1h-6ge" customClass="TPKeyboardAvoidingScrollView">
                                 <rect key="frame" x="0.0" y="-88" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <subviews>
                                     <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="input" minimumFontSize="17" clearButtonMode="whileEditing" id="2zU-MM-NDF">
-                                        <rect key="frame" x="31" y="186" width="201" height="30"/>
+                                        <rect key="frame" x="31" y="185" width="201" height="30"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <textInputTraits key="textInputTraits" returnKeyType="send"/>
@@ -70,7 +70,7 @@
                                         </connections>
                                     </textField>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="4Hu-rF-3sX">
-                                        <rect key="frame" x="254" y="186" width="36" height="30"/>
+                                        <rect key="frame" x="254" y="185" width="36" height="30"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <state key="normal" title="Send">
                                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -80,7 +80,7 @@
                                         </connections>
                                     </button>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" id="lJR-fr-hck">
-                                        <rect key="frame" x="31" y="232" width="259" height="316"/>
+                                        <rect key="frame" x="31" y="231" width="259" height="268"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -91,19 +91,12 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" title="Device View" id="jp9-4p-yK0">
-                        <barButtonItem key="leftBarButtonItem" title="back" id="q1Z-DU-hVd">
-                            <connections>
-                                <segue destination="zkw-BM-qPF" kind="unwind" unwindAction="reset:" id="D1B-8L-sD4"/>
-                            </connections>
-                        </barButtonItem>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" title="Device View" id="jp9-4p-yK0"/>
                     <connections>
                         <outlet property="input" destination="2zU-MM-NDF" id="f6a-sD-fbe"/>
                         <outlet property="response" destination="lJR-fr-hck" id="UIa-Y6-f2x"/>
                     </connections>
                 </viewController>
-                <exit id="zkw-BM-qPF" userLabel="Exit" sceneMemberID="exit"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="LIe-5k-il9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1222" y="292"/>

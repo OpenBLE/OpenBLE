@@ -12,10 +12,11 @@
 
 @interface DetailViewController : UIViewController <LeDiscoveryDelegate, LeServiceDelegate, LeDataProtocol>
 
+@property (weak, nonatomic) IBOutlet UILabel *currentlyConnectedSensor;
+@property (weak, nonatomic) IBOutlet UITextView *response;
+@property (weak, nonatomic) IBOutlet UITextField *input;
+
 @property (strong, nonatomic) LeDataService *currentlyDisplayingService;
-@property (strong, nonatomic) IBOutlet UILabel *currentlyConnectedSensor;
-@property (strong, nonatomic) IBOutlet UITextView *response;
-@property (strong, nonatomic) IBOutlet UITextField *input;
 
 -(IBAction)send:(id)sender;
 

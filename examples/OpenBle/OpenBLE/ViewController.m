@@ -15,13 +15,12 @@
 #import "DetailViewController.h"
 
 @interface ViewController ()  <LeDiscoveryDelegate, LeServiceDelegate, UITableViewDataSource, UITableViewDelegate>
+
+@property (retain, nonatomic) IBOutlet UITableView      *sensorsTable;
+@property (retain, nonatomic) IBOutlet UIRefreshControl *refreshControl;
+
 @property (retain, nonatomic) LeDataService             *currentlyDisplayingService;
 @property (retain, nonatomic) NSMutableArray            *connectedServices;
-@property (retain, nonatomic) IBOutlet UITableView      *sensorsTable;
-
-@property (retain, nonatomic) IBOutlet UIRefreshControl *refreshControl;
--(IBAction)refresh:(id)sender;
--(IBAction)reset:(UIStoryboardSegue *)segue;
 
 @end
 
@@ -56,31 +55,23 @@
     
     connectedServices = [NSMutableArray new];
     
-	[[LeDiscovery sharedInstance] setDiscoveryDelegate:self];
+    [self.refreshControl beginRefreshing];
     
-    [self.refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
-    
+    if (self.tableView.contentOffset.y == 0)
+    {
+        self.tableView.contentOffset = CGPointMake(0, -self.refreshControl.frame.size.height / 2);
+    }
 }
 
 //stuff that needs to happen every time we come back to this view controller
 -(void)viewWillAppear:(BOOL)animated
 {
+    [[LeDiscovery sharedInstance] setPeripheralDelegate:self];
+	[[LeDiscovery sharedInstance] setDiscoveryDelegate:self];
     
     [self reset:nil];
 }
 
-- (void) viewDidUnload
-{
-
-    [self setSensorsTable:nil];
-
-    [self setConnectedServices:nil];
-    [self setCurrentlyDisplayingService:nil];
-    
-    [[LeDiscovery sharedInstance] stopScanning];
-    
-    [super viewDidUnload];
-}
 
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
@@ -90,7 +81,8 @@
 - (void) dealloc 
 {
     [[LeDiscovery sharedInstance] stopScanning];
-    
+    [[LeDiscovery sharedInstance] setPeripheralDelegate:nil];
+	[[LeDiscovery sharedInstance] setDiscoveryDelegate:nil];
 }
 
 //turn stuff off before we move to next view
@@ -104,31 +96,11 @@
     [[LeDiscovery sharedInstance] setPeripheralDelegate:dest];
 
     [[LeDiscovery sharedInstance] stopScanning];
-    [self.refreshControl endRefreshing];
 }
 
-//initiate refresh, we only do this programmatically, but is normally called by pulling down on table
-- (IBAction)refresh:(id)sender {
+- (void)reset:(id)sender
+{
     [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
-    
-    [self.refreshControl beginRefreshing];
-    
-    if (self.tableView.contentOffset.y == 0) {
-        
-        [UIView animateWithDuration:0.25 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:^(void){
-            
-            self.tableView.contentOffset = CGPointMake(0, -self.refreshControl.frame.size.height);
-            
-        } completion:^(BOOL finished){
-            
-        }];
-        
-    }
-}
-
-- (IBAction)reset:(id)sender {
-    [[LeDiscovery sharedInstance] setPeripheralDelegate:self];
-    [self refresh:nil];
 }
 
 #pragma mark -

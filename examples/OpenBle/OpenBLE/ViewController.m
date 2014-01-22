@@ -96,6 +96,12 @@
 
 - (void)reset:(id)sender
 {
+    //if we're coming back reset our delegate
+    if(currentlyDisplayingService)
+    {
+        [currentlyDisplayingService setController:self];
+    }
+    
     [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
 }
 

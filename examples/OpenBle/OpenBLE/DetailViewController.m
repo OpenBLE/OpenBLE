@@ -94,7 +94,7 @@
 #pragma mark -
 #pragma mark LeService Delegate Methods
 /****************************************************************************/
-/*				LeServiceDelegate Delegate Methods                                */
+/*				LeServiceDelegate Delegate Methods                          */
 /****************************************************************************/
 /** Central Manager reset */
 - (void) serviceDidReset

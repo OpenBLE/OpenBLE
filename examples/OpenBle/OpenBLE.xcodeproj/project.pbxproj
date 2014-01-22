@@ -15,6 +15,7 @@
 		5B158E7918321E53006EE7C2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B158E7818321E53006EE7C2 /* AppDelegate.m */; };
 		5B158E7B18321E53006EE7C2 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5B158E7A18321E53006EE7C2 /* Images.xcassets */; };
 		5B22D6D5185FFF510067D75A /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B22D6D4185FFF510067D75A /* libPods.a */; };
+		5B37BDB7188F69A10096D750 /* BLECell.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B37BDB6188F69A10096D750 /* BLECell.m */; };
 		5B4BCB3E18321E8500ADAE0E /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B4BCB3918321E8500ADAE0E /* DetailViewController.m */; };
 		5B4BCB4318321E8B00ADAE0E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B4BCB4218321E8B00ADAE0E /* ViewController.m */; };
 		5B4BCB4718321ECD00ADAE0E /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5B4BCB4518321ECD00ADAE0E /* MainStoryboard.storyboard */; };
@@ -32,6 +33,8 @@
 		5B158E7A18321E53006EE7C2 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		5B158E8118321E53006EE7C2 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		5B22D6D4185FFF510067D75A /* libPods.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPods.a; path = "Pods/build/Debug-iphoneos/libPods.a"; sourceTree = "<group>"; };
+		5B37BDB5188F69A10096D750 /* BLECell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLECell.h; sourceTree = "<group>"; };
+		5B37BDB6188F69A10096D750 /* BLECell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLECell.m; sourceTree = "<group>"; };
 		5B4AE3F7182F88C700E9DD0A /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "OpenBLE/Default-568h@2x.png"; sourceTree = "<group>"; };
 		5B4BCB3818321E8500ADAE0E /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		5B4BCB3918321E8500ADAE0E /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
@@ -71,6 +74,8 @@
 				5B4BCB4218321E8B00ADAE0E /* ViewController.m */,
 				5B4BCB3818321E8500ADAE0E /* DetailViewController.h */,
 				5B4BCB3918321E8500ADAE0E /* DetailViewController.m */,
+				5B37BDB5188F69A10096D750 /* BLECell.h */,
+				5B37BDB6188F69A10096D750 /* BLECell.m */,
 				5B158E7A18321E53006EE7C2 /* Images.xcassets */,
 				5B158E6F18321E53006EE7C2 /* Supporting Files */,
 			);
@@ -224,6 +229,7 @@
 				5B4BCB4318321E8B00ADAE0E /* ViewController.m in Sources */,
 				5B158E7918321E53006EE7C2 /* AppDelegate.m in Sources */,
 				5B158E7518321E53006EE7C2 /* main.m in Sources */,
+				5B37BDB7188F69A10096D750 /* BLECell.m in Sources */,
 				5B4BCB3E18321E8500ADAE0E /* DetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

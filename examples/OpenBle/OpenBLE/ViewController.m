@@ -12,21 +12,20 @@
 #import "LeDiscovery.h"
 #import "LeDataService.h"
 #import "DetailViewController.h"
+#import "BLECell.h"
 
 @interface ViewController ()  <LeDiscoveryDelegate, LeServiceDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *sensorsTable;
 @property (weak, nonatomic) IBOutlet UIRefreshControl *refreshControl;
 
-@property (strong, nonatomic) LeDataService *currentlyDisplayingService;
-@property (strong, nonatomic) NSMutableArray *connectedServices;
+@property (weak, nonatomic) LeDataService* currentlyDisplayingService;
 
 @end
 
 @implementation ViewController
 
 @synthesize currentlyDisplayingService;
-@synthesize connectedServices;
 @synthesize sensorsTable;
 @synthesize refreshControl;
 
@@ -52,8 +51,6 @@
 {
     [super viewDidLoad];
     
-    connectedServices = [NSMutableArray new];
-    
     [self.refreshControl beginRefreshing];
     
     if (self.tableView.contentOffset.y == 0)
@@ -67,7 +64,7 @@
 {
     [[LeDiscovery sharedInstance] setPeripheralDelegate:self];
 	[[LeDiscovery sharedInstance] setDiscoveryDelegate:self];
-    
+
     [self reset:nil];
 }
 
@@ -85,11 +82,11 @@
 }
 
 //turn stuff off before we move to next view
-- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender{
-    
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
     DetailViewController *dest =[segue destinationViewController];
-    dest.currentlyDisplayingService = currentlyDisplayingService;
-    [currentlyDisplayingService setController:dest];
+    dest.currentlyDisplayingService = (LeDataService*)sender;
+    [(LeDataService*)sender setController:dest];
     
     //tell Discovery to that it should report to destination when its peripheral changes status
     [[LeDiscovery sharedInstance] setPeripheralDelegate:dest];
@@ -109,7 +106,7 @@
 /****************************************************************************/
 - (LeDataService*) serviceForPeripheral:(CBPeripheral *)peripheral
 {
-    for (LeDataService *service in connectedServices) {
+    for (LeDataService *service in [[LeDiscovery sharedInstance] connectedServices]) {
         if ( [[service peripheral] isEqual:peripheral] ) {
             return service;
         }
@@ -121,7 +118,7 @@
 - (void)didEnterBackgroundNotification:(NSNotification*)notification
 {   
     NSLog(@"Entered background notification called.");
-    for (LeDataService *service in self.connectedServices) {
+    for (LeDataService *service in [[LeDiscovery sharedInstance] connectedServices]) {
         [service enteredBackground];
     }
 }
@@ -129,7 +126,7 @@
 - (void)didEnterForegroundNotification:(NSNotification*)notification
 {
     NSLog(@"Entered foreground notification called.");
-    for (LeDataService *service in self.connectedServices) {
+    for (LeDataService *service in [[LeDiscovery sharedInstance] connectedServices]) {
         [service enteredForeground];
     }    
 }
@@ -143,22 +140,14 @@
 - (void) serviceDidReceiveCharacteristicsFromService:(LeDataService*)service
 {
     NSLog(@"Service (%@) did receive characteristics", service.peripheral.name);
-    if (![connectedServices containsObject:service]) {
-        [connectedServices addObject:service];
-    }
     currentlyDisplayingService = service;
-    [self performSegueWithIdentifier: @"deviceView" sender:self];
+    [self performSegueWithIdentifier: @"deviceView" sender:service];
 }
 
 /** Peripheral connected or disconnected */
 - (void) serviceDidChangeStatus:(LeDataService*)service
 {
-    if ( ![[service peripheral] isConnected] ) {
-        NSLog(@"Service (%@) disconnected", service.peripheral.name);
-        if ([connectedServices containsObject:service]) {
-            [connectedServices removeObject:service];
-        }
-    }
+    [self.tableView reloadData];
 }
 
 /** Received Data */
@@ -170,7 +159,7 @@
 /** Central Manager reset */
 - (void) serviceDidReset
 {
-    [connectedServices removeAllObjects];
+    [self.tableView reloadData];
 }
 
 
@@ -181,40 +170,43 @@
 /****************************************************************************/
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	UITableViewCell	*cell;
 	CBPeripheral	*peripheral;
 	NSArray			*devices;
 	NSInteger		row	= [indexPath row];
-    static NSString *cellID = @"DeviceList";
-    
-	cell = [tableView dequeueReusableCellWithIdentifier:cellID];
-	if (!cell)
-		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cellID] ;
+
+    static NSString *cellID = @"deviceCell";
+	BLECell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
     
     //2 sections, connected devices and discovered devices
-	if ([indexPath section] == 0) {
+	if ([indexPath section] == 0)
+    {
 		devices = [[LeDiscovery sharedInstance] connectedServices];
         peripheral = [(LeDataService*)[devices objectAtIndex:row] peripheral];
-        
-	} else {
+	} else
+    {        
 		devices = [[LeDiscovery sharedInstance] foundPeripherals];
         peripheral = (CBPeripheral*)[devices objectAtIndex:row];
 	}
     
-    if ([[peripheral name] length]){
-        [[cell textLabel] setText:[peripheral name]];
+    if ([[peripheral name] length])
+    {
+        [cell.name setText:[peripheral name]];
     }
-    else {
-        [[cell textLabel] setText:@"Peripheral"];
-    }
-    
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-    if([peripheral isConnected]){
-        [[cell detailTextLabel] setText:@"Connected"];
-    }else {
-        [[cell detailTextLabel] setText:@"Not Connected"];
+    else
+    {
+        [cell.name setText:@"Peripheral"];
     }
     
+    [cell.uuid setText:[[peripheral identifier] UUIDString]];
+
+    if([peripheral isConnected])
+    {
+        [cell.status setText:@"Connected"];
+    }else
+    {
+        [cell.status setText:@"Not Connected"];
+    }
+        
 	return cell;
 }
 
@@ -244,9 +236,8 @@
 	if ([indexPath section] == 0) {
         //connected devices, segue on over
 		devices = [[LeDiscovery sharedInstance] connectedServices];
-        peripheral = [(LeDataService*)[devices objectAtIndex:row] peripheral];
-        currentlyDisplayingService = [self serviceForPeripheral:peripheral];
-        [self performSegueWithIdentifier: @"deviceView" sender:self];
+        currentlyDisplayingService = [devices objectAtIndex:row];
+        [self performSegueWithIdentifier: @"deviceView" sender:[devices objectAtIndex:row]];
 
 	} else {
         //found devices, send off connect which will segue if successful

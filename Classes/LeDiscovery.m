@@ -186,7 +186,7 @@
         uuidArray = nil;
     }
     
-	NSDictionary	*options	= [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:CBCentralManagerScanOptionAllowDuplicatesKey];
+	NSDictionary	*options	= [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBCentralManagerScanOptionAllowDuplicatesKey];
     
 	[centralManager scanForPeripheralsWithServices:uuidArray options:options];
 }

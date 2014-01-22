@@ -255,42 +255,37 @@
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
-    CBPeripheral	*peripheral;
-	NSArray			*devices;
-    
-    //if device isnt connected we get bounds exception for array
-    @try
-    {
-        devices = [[LeDiscovery sharedInstance] connectedServices];
-        peripheral = [(LeDataService*)[devices objectAtIndex:indexPath.row] peripheral];
-        
-        if([peripheral isConnected]){
-            return YES;
-        }else{
-            return NO;
-        }
-    }
-    @catch(NSException* ex)
-    {
-        return NO;
-    }
-    
+    return YES;
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    CBPeripheral	*peripheral;
-	NSArray			*devices;
-    devices = [[LeDiscovery sharedInstance] connectedServices];
-    peripheral = [(LeDataService*)[devices objectAtIndex:indexPath.row] peripheral];
-    
-    [[LeDiscovery sharedInstance] disconnectPeripheral:peripheral];
+    if([indexPath section])
+    {
+        [[[LeDiscovery sharedInstance] foundPeripherals] removeObjectAtIndex:indexPath.row];
+        [self.tableView reloadData];
+    }
+    else
+    {
+        CBPeripheral	*peripheral;
+        NSArray			*devices;
+        devices = [[LeDiscovery sharedInstance] connectedServices];
+        peripheral = [(LeDataService*)[devices objectAtIndex:indexPath.row] peripheral];
+        
+        [[LeDiscovery sharedInstance] disconnectPeripheral:peripheral];
+    }
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return @"disconnect";
+    if([indexPath section])
+    {
+        return @"delete";
+    }
+    else
+    {
+        return @"disconnect";
+    }
 }
 
 

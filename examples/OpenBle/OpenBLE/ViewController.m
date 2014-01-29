@@ -21,6 +21,8 @@
 
 @property (weak, nonatomic) LeDataService* currentlyDisplayingService;
 
+-(IBAction)refresh:(id)sender;
+
 @end
 
 @implementation ViewController
@@ -50,13 +52,6 @@
 - (void) viewDidLoad
 {
     [super viewDidLoad];
-    
-    [self.refreshControl beginRefreshing];
-    
-    if (self.tableView.contentOffset.y == 0)
-    {
-        self.tableView.contentOffset = CGPointMake(0, -self.refreshControl.frame.size.height / 2);
-    }
 }
 
 //stuff that needs to happen every time we come back to this view controller
@@ -103,6 +98,16 @@
     }
     
     [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
+}
+
+- (IBAction)refresh:(id)sender
+{
+    [self.refreshControl beginRefreshing];
+    [[LeDiscovery sharedInstance] stopScanning];
+    [[[LeDiscovery sharedInstance] foundPeripherals] removeAllObjects];
+    [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
+    [self.tableView reloadData];
+    [self.refreshControl endRefreshing];
 }
 
 #pragma mark -

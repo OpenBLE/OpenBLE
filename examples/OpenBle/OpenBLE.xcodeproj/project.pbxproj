@@ -35,7 +35,6 @@
 		5B22D6D4185FFF510067D75A /* libPods.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPods.a; path = "Pods/build/Debug-iphoneos/libPods.a"; sourceTree = "<group>"; };
 		5B37BDB5188F69A10096D750 /* BLECell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BLECell.h; sourceTree = "<group>"; };
 		5B37BDB6188F69A10096D750 /* BLECell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BLECell.m; sourceTree = "<group>"; };
-		5B4AE3F7182F88C700E9DD0A /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "OpenBLE/Default-568h@2x.png"; sourceTree = "<group>"; };
 		5B4BCB3818321E8500ADAE0E /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		5B4BCB3918321E8500ADAE0E /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		5B4BCB4118321E8B00ADAE0E /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
@@ -97,7 +96,6 @@
 		B9182525148D762500D6064E = {
 			isa = PBXGroup;
 			children = (
-				5B4AE3F7182F88C700E9DD0A /* Default-568h@2x.png */,
 				5B158E6E18321E53006EE7C2 /* OpenBLE */,
 				B9182533148D762600D6064E /* Frameworks */,
 				B9182531148D762600D6064E /* Products */,

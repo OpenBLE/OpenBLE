@@ -6,28 +6,14 @@
 //  Copyright (c) 2013 Augmetous Inc.
 //
 
+
 #import <Foundation/Foundation.h>
 
-#import "ViewController.h"
-#import "LeDiscovery.h"
-#import "LeDataService.h"
-#import "DetailViewController.h"
-#import "BLECell.h"
+#import "ScannerViewController.h"
 
-@interface ViewController ()  <LeDiscoveryDelegate, LeServiceDelegate, UITableViewDataSource, UITableViewDelegate>
+@implementation ScannerViewController
 
-@property (weak, nonatomic) IBOutlet UITableView *sensorsTable;
-@property (weak, nonatomic) IBOutlet UIRefreshControl *refreshControl;
-
-@property (weak, nonatomic) LeDataService* currentlyDisplayingService;
-
--(IBAction)refresh:(id)sender;
-
-@end
-
-@implementation ViewController
-
-@synthesize currentlyDisplayingService;
+@synthesize currentPeripheral;
 @synthesize sensorsTable;
 @synthesize refreshControl;
 
@@ -40,9 +26,6 @@
 {
     self = [super initWithStyle:style];
     if (self) {
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterBackgroundNotification:) name:kDataServiceEnteredBackgroundNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterForegroundNotification:) name:kDataServiceEnteredForegroundNotification object:nil];
 
     }
     return self;
@@ -57,10 +40,11 @@
 //stuff that needs to happen every time we come back to this view controller
 -(void)viewWillAppear:(BOOL)animated
 {
-    [[LeDiscovery sharedInstance] setPeripheralDelegate:self];
-	[[LeDiscovery sharedInstance] setDiscoveryDelegate:self];
-
-    [self reset:nil];
+    [[LeDiscovery sharedInstance] setDiscoveryDelegate:self];
+    
+    [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
+    
+    [sensorsTable reloadData];
 }
 
 
@@ -72,32 +56,7 @@
 - (void) dealloc 
 {
     [[LeDiscovery sharedInstance] stopScanning];
-    [[LeDiscovery sharedInstance] setPeripheralDelegate:nil];
 	[[LeDiscovery sharedInstance] setDiscoveryDelegate:nil];
-}
-
-//turn stuff off before we move to next view
-- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    DetailViewController *dest =[segue destinationViewController];
-    dest.currentlyDisplayingService = (LeDataService*)sender;
-    [(LeDataService*)sender setController:dest];
-    
-    //tell Discovery to that it should report to destination when its peripheral changes status
-    [[LeDiscovery sharedInstance] setPeripheralDelegate:dest];
-
-    [[LeDiscovery sharedInstance] stopScanning];
-}
-
-- (void)reset:(id)sender
-{
-    //if we're coming back reset our delegate
-    if(currentlyDisplayingService)
-    {
-        [currentlyDisplayingService setController:self];
-    }
-    
-    [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
 }
 
 - (IBAction)refresh:(id)sender
@@ -110,68 +69,16 @@
     [self.refreshControl endRefreshing];
 }
 
-#pragma mark -
-#pragma mark LeData Interactions
-/****************************************************************************/
-/*                  LeData Interactions                                     */
-/****************************************************************************/
-- (LeDataService*) serviceForPeripheral:(CBPeripheral *)peripheral
+- (void)manualSegue
 {
-    for (LeDataService *service in [[LeDiscovery sharedInstance] connectedServices]) {
-        if ( [[service peripheral] isEqual:peripheral] ) {
-            return service;
-        }
-    }
+    [[LeDiscovery sharedInstance] stopScanning];
     
-    return nil;
+    //Switch to initial view controller of main storyboard
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
+    UIViewController *viewController = [storyboard instantiateInitialViewController];
+    [self presentViewController:viewController animated:YES completion:nil];
 }
 
-- (void)didEnterBackgroundNotification:(NSNotification*)notification
-{   
-    NSLog(@"Entered background notification called.");
-    for (LeDataService *service in [[LeDiscovery sharedInstance] connectedServices]) {
-        [service enteredBackground];
-    }
-}
-
-- (void)didEnterForegroundNotification:(NSNotification*)notification
-{
-    NSLog(@"Entered foreground notification called.");
-    for (LeDataService *service in [[LeDiscovery sharedInstance] connectedServices]) {
-        [service enteredForeground];
-    }    
-}
-
-
-#pragma mark -
-#pragma mark LeDataProtocol Delegate Methods
-/****************************************************************************/
-/*				LeDataProtocol Delegate Methods                             */
-/****************************************************************************/
-- (void) serviceDidReceiveCharacteristicsFromService:(LeDataService*)service
-{
-    NSLog(@"Service (%@) did receive characteristics", service.peripheral.name);
-    currentlyDisplayingService = service;
-    [self performSegueWithIdentifier: @"deviceView" sender:service];
-}
-
-/** Peripheral connected or disconnected */
-- (void) serviceDidChangeStatus:(LeDataService*)service
-{
-    [self.tableView reloadData];
-}
-
-/** Received Data */
-- (void) serviceDidReceiveData:(NSData*)data fromService:(LeDataService*)service
-{
-    
-}
-
-/** Central Manager reset */
-- (void) serviceDidReset
-{
-    [self.tableView reloadData];
-}
 
 
 #pragma mark -
@@ -191,10 +98,10 @@
     //2 sections, connected devices and discovered devices
 	if ([indexPath section] == 0)
     {
-		devices = [[LeDiscovery sharedInstance] connectedServices];
-        peripheral = [(LeDataService*)[devices objectAtIndex:row] peripheral];
+		devices = [[LeDiscovery sharedInstance] connectedPeripherals];
+        peripheral = [devices objectAtIndex:row];
 	} else
-    {        
+    {
 		devices = [[LeDiscovery sharedInstance] foundPeripherals];
         peripheral = (CBPeripheral*)[devices objectAtIndex:row];
 	}
@@ -231,7 +138,7 @@
 	NSInteger	res = 0;
     
 	if (section == 0)
-		res = [[[LeDiscovery sharedInstance] connectedServices] count];
+		res = [[[LeDiscovery sharedInstance] connectedPeripherals] count];
 	else
 		res = [[[LeDiscovery sharedInstance] foundPeripherals] count];
     
@@ -246,9 +153,9 @@
 	
 	if ([indexPath section] == 0) {
         //connected devices, segue on over
-		devices = [[LeDiscovery sharedInstance] connectedServices];
-        currentlyDisplayingService = [devices objectAtIndex:row];
-        [self performSegueWithIdentifier: @"deviceView" sender:[devices objectAtIndex:row]];
+		devices = [[LeDiscovery sharedInstance] connectedPeripherals];
+        currentPeripheral = [devices objectAtIndex:row];
+        [self manualSegue];
 
 	} else {
         //found devices, send off connect which will segue if successful
@@ -274,8 +181,8 @@
     {
         CBPeripheral	*peripheral;
         NSArray			*devices;
-        devices = [[LeDiscovery sharedInstance] connectedServices];
-        peripheral = [(LeDataService*)[devices objectAtIndex:indexPath.row] peripheral];
+        devices = [[LeDiscovery sharedInstance] connectedPeripherals];
+        peripheral = [devices objectAtIndex:indexPath.row];
         
         [[LeDiscovery sharedInstance] disconnectPeripheral:peripheral];
     }
@@ -304,12 +211,25 @@
     [sensorsTable reloadData];
 }
 
-- (void) discoveryStatePoweredOff 
+- (void) discoveryStatePoweredOff
 {
     NSString *title     = @"Bluetooth Power";
     NSString *message   = @"You must turn on Bluetooth in Settings in order to use LE";
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alertView show];
+}
+
+/** Peripheral disconnected -- do something? */
+-(void)peripheralDidDisconnect:(CBPeripheral *)peripheral
+{
+    [sensorsTable reloadData];
+}
+
+/** Peripheral connected */
+- (void) peripheralDidConnect:(CBPeripheral *)peripheral
+{
+    currentPeripheral = peripheral;
+    [self manualSegue];
 }
 
 @end

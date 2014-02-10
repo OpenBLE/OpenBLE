@@ -23,10 +23,8 @@
 @implementation LeDiscovery
 
 @synthesize foundPeripherals;
-@synthesize connectedServices;
+@synthesize connectedPeripherals;
 @synthesize discoveryDelegate;
-@synthesize peripheralDelegate;
-
 
 
 #pragma mark -
@@ -53,7 +51,7 @@
 		centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:dispatch_get_main_queue()];
         
 		foundPeripherals = [[NSMutableArray alloc] init];
-		connectedServices = [[NSMutableArray alloc] init];
+		connectedPeripherals = [[NSMutableArray alloc] init];
 	}
     return self;
 }
@@ -186,9 +184,9 @@
         uuidArray = nil;
     }
     
-	NSDictionary	*options	= [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBCentralManagerScanOptionAllowDuplicatesKey];
+//	NSDictionary	*options	= [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBCentralManagerScanOptionAllowDuplicatesKey];
     
-	[centralManager scanForPeripheralsWithServices:uuidArray options:options];
+	[centralManager scanForPeripheralsWithServices:uuidArray options:nil];
 }
 
 
@@ -229,20 +227,13 @@
 
 - (void) centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
 {
-	LeDataService	*service	= nil;
-	
-	/* Create a service instance. */
-	service = [[LeDataService alloc] initWithPeripheral:peripheral controller:peripheralDelegate] ;
-	[service start];
-    
-	if (![connectedServices containsObject:service])
-		[connectedServices addObject:service];
+	if (![connectedPeripherals containsObject:peripheral])
+		[connectedPeripherals addObject:peripheral];
     
 	if ([foundPeripherals containsObject:peripheral])
 		[foundPeripherals removeObject:peripheral];
     
-    [peripheralDelegate serviceDidChangeStatus:service];
-	[discoveryDelegate discoveryDidRefresh];
+    [discoveryDelegate peripheralDidConnect:peripheral];
 }
 
 
@@ -254,29 +245,28 @@
 
 - (void) centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
 {
-	LeDataService	*service	= nil;
+    CBPeripheral *_peripheral;
     
-	for (service in connectedServices) {
-		if ([service peripheral] == peripheral) {
-			[connectedServices removeObject:service];
-            [peripheralDelegate serviceDidChangeStatus:service];
+	for (_peripheral in connectedPeripherals) {
+		if (_peripheral == peripheral) {
+			[connectedPeripherals removeObject:peripheral];
+            [discoveryDelegate peripheralDidConnect:peripheral];
 			break;
 		}
 	}
     
-	[discoveryDelegate discoveryDidRefresh];
+    //put back in our found list
+    [foundPeripherals addObject:peripheral];
+    
+	[discoveryDelegate peripheralDidDisconnect:peripheral];
 }
 
 
 - (void) clearDevices
 {
-    LeDataService	*service;
     [foundPeripherals removeAllObjects];
-    
-    for (service in connectedServices) {
-        [service reset];
-    }
-    [connectedServices removeAllObjects];
+    [connectedPeripherals removeAllObjects];
+    [discoveryDelegate discoveryDidRefresh];
 }
 
 
@@ -328,7 +318,6 @@
 		{
 			[self clearDevices];
             [discoveryDelegate discoveryDidRefresh];
-            [peripheralDelegate serviceDidReset];
             
 			pendingInit = YES;
 			break;

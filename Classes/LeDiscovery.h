@@ -13,8 +13,6 @@
 #import <Foundation/Foundation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
 
-#import "LeDataService.h"
-
 
 
 /****************************************************************************/
@@ -23,12 +21,8 @@
 @protocol LeDiscoveryDelegate <NSObject>
 - (void) discoveryDidRefresh;
 - (void) discoveryStatePoweredOff;
-@end
-
-
-@protocol LeServiceDelegate <NSObject>
-- (void) serviceDidReset;
-- (void) serviceDidChangeStatus:(LeDataService*)service;
+- (void) peripheralDidConnect:(CBPeripheral*)peripheral;
+- (void) peripheralDidDisconnect:(CBPeripheral*)peripheral;
 @end
 
 
@@ -43,8 +37,7 @@
 /****************************************************************************/
 /*								UI controls									*/
 /****************************************************************************/
-@property (nonatomic, assign) id<LeDiscoveryDelegate>           discoveryDelegate;
-@property (nonatomic, assign) id<LeServiceDelegate>	peripheralDelegate;
+@property (nonatomic, assign) id<LeDiscoveryDelegate> discoveryDelegate;
 
 
 /****************************************************************************/
@@ -60,6 +53,6 @@
 /****************************************************************************/
 /*							Access to the devices							*/
 /****************************************************************************/
-@property (retain, nonatomic) NSMutableArray    *foundPeripherals;
-@property (retain, nonatomic) NSMutableArray	*connectedServices;	// Array of LeDataService
+@property (strong, nonatomic) NSMutableArray    *foundPeripherals;
+@property (strong, nonatomic) NSMutableArray	*connectedPeripherals;
 @end

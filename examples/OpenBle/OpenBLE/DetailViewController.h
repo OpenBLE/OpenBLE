@@ -10,14 +10,15 @@
 #import "LeDataService.h"
 #import "LeDiscovery.h"
 
-@interface DetailViewController : UIViewController <LeDiscoveryDelegate, LeServiceDelegate, LeDataProtocol>
+@interface DetailViewController : UIViewController <LeDiscoveryDelegate>
 
-@property (weak, nonatomic) IBOutlet UILabel *currentlyConnectedSensor;
 @property (weak, nonatomic) IBOutlet UITextView *response;
 @property (weak, nonatomic) IBOutlet UITextField *input;
+@property (weak, nonatomic) IBOutlet UIButton *sendButton;
 
 @property (strong, nonatomic) LeDataService *currentlyDisplayingService;
 
 -(IBAction)send:(id)sender;
+-(IBAction)back:(id)sender;
 
 @end

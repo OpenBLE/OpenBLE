@@ -32,8 +32,6 @@ extern NSString *kDataServiceEnteredForegroundNotification;
 @protocol LeDataProtocol<NSObject>
 - (void) serviceDidReceiveData:(NSData*)data fromService:(LeDataService*)service;
 - (void) serviceDidReceiveCharacteristicsFromService:(LeDataService*)service;
-- (void) serviceDidChangeStatus:(LeDataService*)service;
-- (void) serviceDidReset;
 - (void) didWriteFromService:(LeDataService *)service withError:(NSError *)error;
 @end
 

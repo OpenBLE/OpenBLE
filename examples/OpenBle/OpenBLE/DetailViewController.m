@@ -8,13 +8,14 @@
 
 #import "DetailViewController.h"
 #import "LeDataService.h"
+#import "ScannerViewController.h"
 
 @implementation DetailViewController
 
 @synthesize currentlyDisplayingService;
-@synthesize currentlyConnectedSensor;
 @synthesize response;
 @synthesize input;
+@synthesize sendButton;
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -34,7 +35,25 @@
 {
     [super viewDidLoad];
     
-    currentlyConnectedSensor.text = [[currentlyDisplayingService peripheral] name];
+    //Tell Discovery to report to us if anything happens with our peripherals
+    [[LeDiscovery sharedInstance] setDiscoveryDelegate:self];
+
+    //We left our peripheral in our root controller
+    //This is a bit messy but moving between Storyboards is only half supported
+    UINavigationController *navController = (UINavigationController*)[self.navigationController presentingViewController];
+    ScannerViewController *rootController =(ScannerViewController*)[navController.viewControllers objectAtIndex:0];
+
+    //Create a new DataService with peripheral, and tell it to report to us
+    self.currentlyDisplayingService = [[LeDataService alloc] initWithPeripheral:(CBPeripheral*)rootController.currentPeripheral controller:self];
+    
+    //start the service
+    [currentlyDisplayingService start];
+    
+    //Until we know service has started, disable sending
+    [sendButton setEnabled:NO];
+
+    //set peripheral name into navigation header
+    self.navigationItem.title = [[currentlyDisplayingService peripheral] name];
 }
 
 - (void)didReceiveMemoryWarning
@@ -45,7 +64,11 @@
 
 - (void) dealloc
 {
+    //nil delegates so nothing points to us
+    [[LeDiscovery sharedInstance] setDiscoveryDelegate:nil];
+    [currentlyDisplayingService setController:nil];
 }
+
 
 #pragma mark -
 #pragma mark App IO
@@ -54,13 +77,19 @@
 /****************************************************************************/
 -(IBAction)send:(id)sender
 {
+    //send data
     NSData* tosend=[[input text] dataUsingEncoding:NSUTF8StringEncoding];
-    
     [currentlyDisplayingService write:tosend];
-    
-    NSString* newStr = [[NSString alloc] initWithFormat:@"< %@\n",[input text]] ;
 
+    //put sent text in chat box
+    NSString* newStr = [[NSString alloc] initWithFormat:@"< %@\n",[input text]] ;
     [response setText:[newStr stringByAppendingString:response.text]];
+}
+
+-(IBAction)back:(id)sender
+{
+    //We have to manually dismiss our view controller instead of using IB's back button
+    [[self.navigationController presentingViewController] dismissViewControllerAnimated:YES completion:nil];
 }
 
 
@@ -75,46 +104,22 @@
     if (service != currentlyDisplayingService)
         return;
     
-    NSString* newStr = [[NSString alloc] initWithData:data
-                                              encoding:NSUTF8StringEncoding] ;
-    
+    //format text and place in chat box
+    NSString* newStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] ;
     NSString* newStr2 = [[NSString alloc] initWithFormat:@"> %@",newStr] ;
-
     [response setText:[newStr2 stringByAppendingString:response.text]];
 }
 
-//if your service supports writewithresponse, this confirms the data was received with ack
-//otherwise just returns after an attempted send with error nil
-//very helpful in metering a large batch of sends so you don't overwhelm the device's receive buffer
+/** Confirms the data was received with ack (if supported), or the error */
 -(void)didWriteFromService:(LeDataService *)service withError:(NSError *)error{
-    
+    //we just assume writes went through
 }
 
-
-#pragma mark -
-#pragma mark LeService Delegate Methods
-/****************************************************************************/
-/*				LeServiceDelegate Delegate Methods                          */
-/****************************************************************************/
-/** Central Manager reset */
-- (void) serviceDidReset
+/** Confirms service started fully */
+- (void) serviceDidReceiveCharacteristicsFromService:(LeDataService*)service
 {
-    //TODO do something? probably have to go back to root controller and reconnect?
-}
-
-/** Peripheral connected or disconnected */
-- (void) serviceDidChangeStatus:(LeDataService*)service
-{
-    if ( [[service peripheral] isConnected] )
-    {
-        NSLog(@"Service (%@) connected", service.peripheral.name);
-    }
-    
-    else
-    {
-        NSLog(@"Service (%@) disconnected", service.peripheral.name);
-        [[self navigationController] popToRootViewControllerAnimated:YES];
-    }
+    //all services go, enable button
+    [sendButton setEnabled:YES];
 }
 
 
@@ -123,16 +128,32 @@
 /****************************************************************************/
 /*                       LeDiscoveryDelegate Methods                        */
 /****************************************************************************/
-- (void) discoveryDidRefresh
-{
-}
-
+/** Bluetooth support was disabled */
 - (void) discoveryStatePoweredOff
 {
     NSString *title     = @"Bluetooth Power";
     NSString *message   = @"You must turn on Bluetooth in Settings in order to use LE";
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alertView show];
+}
+
+/** Peripheral disconnected -- do something? */
+-(void)peripheralDidDisconnect:(CBPeripheral *)peripheral
+{
+    //We have to manually dismiss our view controller instead of using IB's back button
+    [[self.navigationController presentingViewController] dismissViewControllerAnimated:YES completion:nil];
+}
+
+/** Peripheral connected */
+- (void) peripheralDidConnect:(CBPeripheral *)peripheral
+{
+    //shouldnt get this as we disable discovery in the Discovery class
+}
+
+/** List of peripherals changed */
+- (void) discoveryDidRefresh
+{
+    //shouldnt get this as we disable discovery in the Discovery class
 }
 
 @end

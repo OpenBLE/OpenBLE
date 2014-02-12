@@ -44,7 +44,7 @@
     ScannerViewController *rootController =(ScannerViewController*)[navController.viewControllers objectAtIndex:0];
 
     //Create a new DataService with peripheral, and tell it to report to us
-    self.currentlyDisplayingService = [[LeDataService alloc] initWithPeripheral:(CBPeripheral*)rootController.currentPeripheral controller:self];
+    self.currentlyDisplayingService = [[LeDataService alloc] initWithPeripheral:(CBPeripheral*)rootController.currentPeripheral delegate:self];
     
     //start the service
     [currentlyDisplayingService start];
@@ -66,7 +66,7 @@
 {
     //nil delegates so nothing points to us
     [[LeDiscovery sharedInstance] setDiscoveryDelegate:nil];
-    [currentlyDisplayingService setController:nil];
+    [currentlyDisplayingService setDelegate:nil];
 }
 
 

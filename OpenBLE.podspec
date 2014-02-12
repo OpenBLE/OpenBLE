@@ -24,10 +24,10 @@ Pod::Spec.new do |s|
 
   s.source       = { :git => "https://github.com/OpenBLE/OpenBLE.git", :tag => s.version.to_s }
 
-  s.source_files = 'Classes', 'Classes/**/*.{h,m}'
+  s.source_files  = 'Classes', 'Classes/**/*.{h,m}'
 
-  s.resources    = 'Resources/**/*.storyboard'                                                                                       
-  s.framework    = 'CoreBluetooth'
+  s.resources    = 'Resources/**/*.storyboard'                                   
+  s.framework  = 'CoreBluetooth'
   
   s.requires_arc = true
 

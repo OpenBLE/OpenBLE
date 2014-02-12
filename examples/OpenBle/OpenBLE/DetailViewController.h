@@ -10,7 +10,7 @@
 #import "LeDataService.h"
 #import "LeDiscovery.h"
 
-@interface DetailViewController : UIViewController <LeDiscoveryDelegate>
+@interface DetailViewController : UIViewController <LeDiscoveryDelegate, LeDataProtocol>
 
 @property (weak, nonatomic) IBOutlet UITextView *response;
 @property (weak, nonatomic) IBOutlet UITextField *input;

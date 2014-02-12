@@ -13,18 +13,6 @@
 #import "LeDataService.h"
 #import "LeDiscovery.h"
 
-NSString *XadowPeripheralNameString =               @"Xadow BLE Slave";
-NSString *XadowDataServiceUUIDString =              @"FFF0";
-NSString *XadowWriteCharacteristicUUIDString =      @"FFF2";
-NSString *XadowReadCharacteristicUUIDString =       @"FFF1";
-
-NSString *RedbearPeripheralNameString =             @"BLE Shield";
-NSString *RedbearDataServiceUUIDString =            @"713D0000-503E-4C75-BA94-3148F18D941E";
-NSString *RedbearWriteCharacteristicUUIDString =    @"713D0003-503E-4C75-BA94-3148F18D941E";
-NSString *RedbearReadCharacteristicUUIDString =     @"713D0002-503E-4C75-BA94-3148F18D941E";
-
-NSString *kDataServiceEnteredBackgroundNotification = @"kDataServiceEnteredBackgroundNotification";
-NSString *kDataServiceEnteredForegroundNotification = @"kDataServiceEnteredForegroundNotification";
 
 @interface LeDataService() <CBPeripheralDelegate> {
 @private
@@ -59,14 +47,14 @@ NSString *kDataServiceEnteredForegroundNotification = @"kDataServiceEnteredForeg
 /****************************************************************************/
 /*								Init										*/
 /****************************************************************************/
-- (id) initWithPeripheral:(CBPeripheral *)peripheral controller:(id<LeDataProtocol>)controller
+- (id) initWithPeripheral:(CBPeripheral *)peripheral delegate:(id<LeDataProtocol>)delegate
 {
     self = [super init];
     if (self) {
         
         servicePeripheral = peripheral;
         [servicePeripheral setDelegate:self];
-		peripheralDelegate = controller;
+		peripheralDelegate = delegate;
         
         kPeripheralUUIDString = (__bridge_transfer NSString *)CFUUIDCreateString(NULL, peripheral.UUID);
 
@@ -115,10 +103,9 @@ NSString *kDataServiceEnteredForegroundNotification = @"kDataServiceEnteredForeg
 /****************************************************************************/
 /*							Service Interactions							*/
 /****************************************************************************/
-- (void) setController:(id<LeDataProtocol>)controller
+- (void) setDelegate:(id<LeDataProtocol>)delegate
 {
-    peripheralDelegate = controller;
-
+    peripheralDelegate = delegate;
 }
 
 - (void) start

@@ -12,17 +12,9 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
+#import "LeService.h"
 
 
-/****************************************************************************/
-/*						Service Characteristics								*/
-/****************************************************************************/
-extern NSString *kDataServiceUUIDString;
-extern NSString *kWriteCharacteristicUUIDString;
-extern NSString *kReadCharacteristicUUIDString;
-
-extern NSString *kDataServiceEnteredBackgroundNotification;
-extern NSString *kDataServiceEnteredForegroundNotification;
 
 /****************************************************************************/
 /*								Protocol									*/
@@ -41,8 +33,8 @@ extern NSString *kDataServiceEnteredForegroundNotification;
 /****************************************************************************/
 @interface LeDataService : NSObject
 
-- (id) initWithPeripheral:(CBPeripheral *)peripheral controller:(id<LeDataProtocol>)controller;
-- (void) setController:(id<LeDataProtocol>)controller;
+- (id) initWithPeripheral:(CBPeripheral *)peripheral delegate:(id<LeDataProtocol>)delegate;
+- (void) setDelegate:(id<LeDataProtocol>)delegate;
 
 - (void) reset;
 - (void) start;

@@ -31,4 +31,5 @@ Pod::Spec.new do |s|
   
   s.requires_arc = true
 
+  s.prefix_header_contents = "#ifndef DEBUG\n#define NSLog(...)\n#endif"
 end

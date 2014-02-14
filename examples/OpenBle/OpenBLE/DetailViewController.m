@@ -10,12 +10,19 @@
 #import "LeDataService.h"
 #import "ScannerViewController.h"
 
+@interface DetailViewController() {
+@private
+    bool background;
+}
+@end
+
 @implementation DetailViewController
 
 @synthesize currentlyDisplayingService;
 @synthesize response;
 @synthesize input;
 @synthesize sendButton;
+@synthesize notifySwitch;
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -108,11 +115,18 @@
 {
     if (service != currentlyDisplayingService)
         return;
-    
+
     //format text and place in chat box
     NSString* newStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] ;
     NSString* newStr2 = [[NSString alloc] initWithFormat:@"> %@",newStr] ;
     [response setText:[newStr2 stringByAppendingString:response.text]];
+    
+    if(background){
+        UILocalNotification *localNotif = [[UILocalNotification alloc] init];
+        localNotif.alertBody = newStr;
+        localNotif.alertAction = @"BLE Message!";
+        [[UIApplication sharedApplication] scheduleLocalNotification:localNotif];
+    }
 }
 
 /** Confirms the data was received with ack (if supported), or the error */
@@ -145,14 +159,22 @@
 /** Peripheral disconnected -- do something? */
 -(void)peripheralDidDisconnect:(CBPeripheral *)peripheral
 {
+    //disable send
+    [sendButton setEnabled:NO];
+    
+    //Try to reconnect
+    [[LeDiscovery sharedInstance] connectPeripheral:peripheral];
+
+    //may also just want to automatically go back to chooser
     //We have to manually dismiss our view controller instead of using IB's back button
-    [[self.navigationController presentingViewController] dismissViewControllerAnimated:YES completion:nil];
+    //[[self.navigationController presentingViewController] dismissViewControllerAnimated:YES completion:nil];
 }
 
 /** Peripheral connected */
 - (void) peripheralDidConnect:(CBPeripheral *)peripheral
 {
-    //shouldnt get this as we disable discovery in the Discovery class
+    //only get this if we reconnected, so restart service
+    [currentlyDisplayingService start];
 }
 
 /** List of peripherals changed */
@@ -169,14 +191,36 @@
 /****************************************************************************/
 - (void)didEnterBackgroundNotification:(NSNotification*)notification
 {
-    //Tell service we entered background
-    [currentlyDisplayingService enteredBackground];
+    //if we were trying to reconnect to a peripheral, lets stop for battery life
+    if([[currentlyDisplayingService peripheral] state] == CBPeripheralStateConnecting)
+    {
+        [[LeDiscovery sharedInstance] disconnectPeripheral:[currentlyDisplayingService peripheral]];
+    }
+    
+    //if notify is off
+    if(![notifySwitch isOn]){
+        //Tell service we entered background so we don't get notifications
+        [currentlyDisplayingService enteredBackground];
+    }
+    
+    background = YES;
 }
 
 - (void)didEnterForegroundNotification:(NSNotification*)notification
 {
-    //Tell service we entered foreground
-    [currentlyDisplayingService enteredForeground];
+    //if we're not connected, try to connect
+    if([[currentlyDisplayingService peripheral] state] == CBPeripheralStateDisconnected)
+    {
+        [[LeDiscovery sharedInstance] connectPeripheral:[currentlyDisplayingService peripheral]];
+    }
+    
+    //if notify is off
+    if(![notifySwitch isOn]){
+        //Tell service we entered foreground so we get text again
+        [currentlyDisplayingService enteredForeground];
+    }
+    
+    background = NO;
 }
 
 @end

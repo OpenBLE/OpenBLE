@@ -15,6 +15,7 @@
 @property (weak, nonatomic) IBOutlet UITextView *response;
 @property (weak, nonatomic) IBOutlet UITextField *input;
 @property (weak, nonatomic) IBOutlet UIButton *sendButton;
+@property (weak, nonatomic) IBOutlet UISwitch *notifySwitch;
 
 @property (strong, nonatomic) LeDataService *currentlyDisplayingService;
 

@@ -9,7 +9,6 @@
  */
 
 
-
 #import "LeDataService.h"
 #import "LeDiscovery.h"
 
@@ -35,7 +34,6 @@
 @end
 
 
-
 @implementation LeDataService
 
 
@@ -51,7 +49,6 @@
 {
     self = [super init];
     if (self) {
-        
         servicePeripheral = peripheral;
         [servicePeripheral setDelegate:self];
 		peripheralDelegate = delegate;
@@ -61,17 +58,15 @@
         if([peripheral.name isEqualToString:RedbearPeripheralNameString]){
             kWriteCharacteristicUUIDString = RedbearWriteCharacteristicUUIDString;
             kDataServiceUUIDString = RedbearDataServiceUUIDString;
-            writeUUID	= [CBUUID UUIDWithString:RedbearWriteCharacteristicUUIDString] ;
-            readUUID	= [CBUUID UUIDWithString:RedbearReadCharacteristicUUIDString] ;
+            writeUUID	= [CBUUID UUIDWithString:RedbearWriteCharacteristicUUIDString];
+            readUUID	= [CBUUID UUIDWithString:RedbearReadCharacteristicUUIDString];
         }else
         {
             kWriteCharacteristicUUIDString = XadowWriteCharacteristicUUIDString;
             kDataServiceUUIDString = XadowDataServiceUUIDString;
-            writeUUID	= [CBUUID UUIDWithString:XadowWriteCharacteristicUUIDString] ;
-            readUUID	= [CBUUID UUIDWithString:XadowReadCharacteristicUUIDString] ;
+            writeUUID	= [CBUUID UUIDWithString:XadowWriteCharacteristicUUIDString];
+            readUUID	= [CBUUID UUIDWithString:XadowReadCharacteristicUUIDString];
         }
-        
-
 	}
     return self;
 }
@@ -82,10 +77,7 @@
 		[servicePeripheral setDelegate:[LeDiscovery sharedInstance]];
 
 		servicePeripheral = nil;
-        
-        
     }
-
 }
 
 
@@ -95,7 +87,6 @@
 		servicePeripheral = nil;
 	}
 }
-
 
 
 #pragma mark -
@@ -125,17 +116,17 @@
 
 	if (peripheral != servicePeripheral) {
 		NSLog(@"Wrong Peripheral.\n");
-		return ;
+		return;
 	}
     
     if (error != nil) {
         NSLog(@"Error %@\n", error);
-		return ;
+		return;
 	}
 
 	services = [peripheral services];
 	if (!services || ![services count]) {
-		return ;
+		return;
 	}
 
 	dataService = nil;
@@ -152,7 +143,6 @@
 	}
 }
 
-
 - (void) peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error;
 {
 	NSArray		*characteristics	= [service characteristics];
@@ -160,17 +150,17 @@
     
 	if (peripheral != servicePeripheral) {
 		NSLog(@"Wrong Peripheral.\n");
-		return ;
+		return;
 	}
 	
 	if (service != dataService) {
 		NSLog(@"Wrong Service.\n");
-		return ;
+		return;
 	}
     
     if (error != nil) {
 		NSLog(@"Error %@\n", error);
-		return ;
+		return;
 	}
     
 	for (characteristic in characteristics) {
@@ -195,7 +185,6 @@
 }
 
 
-
 #pragma mark -
 #pragma mark Characteristics interaction
 /****************************************************************************/
@@ -203,10 +192,9 @@
 /****************************************************************************/
 - (void) write:(NSData *)data
 {
-    
     if (!servicePeripheral) {
         NSLog(@"Not connected to a peripheral");
-		return ;
+		return;
     }
 
     if (!writeCharacteristic) {
@@ -226,9 +214,7 @@
     else{
         [servicePeripheral writeValue:data forCharacteristic:writeCharacteristic type:CBCharacteristicWriteWithResponse];
     }
-    
 }
-
 
 /** If we're connected, we don't want to be getting temperature change notifications while we're in the background.
  We will want read notifications, so we don't turn those off.
@@ -270,29 +256,24 @@
     }
 }
 
-
 - (void) peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
-
 	if (peripheral != servicePeripheral) {
 		NSLog(@"Wrong peripheral\n");
-		return ;
+		return;
 	}
 
     if ([error code] != 0) {
 		NSLog(@"Error %@\n", error);
-		return ;
+		return;
 	}
     
     /* Data to read */
     if ([[characteristic UUID] isEqual:readUUID]) {
-        
         [peripheralDelegate serviceDidReceiveData:[readCharacteristic value] fromService:self];
         return;
     }
-
 }
-
 
 - (void) peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {

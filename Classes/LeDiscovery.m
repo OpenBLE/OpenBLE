@@ -250,7 +250,7 @@
 	for (_peripheral in connectedPeripherals) {
 		if (_peripheral == peripheral) {
 			[connectedPeripherals removeObject:peripheral];
-            [discoveryDelegate peripheralDidConnect:peripheral];
+            [discoveryDelegate peripheralDidDisconnect:peripheral];
 			break;
 		}
 	}

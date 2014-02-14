@@ -216,7 +216,7 @@
     }
 }
 
-/** If we're connected, we don't want to be getting temperature change notifications while we're in the background.
+/** If we're connected, we don't want to be getting read change notifications while we're in the background.
  We will want read notifications, so we don't turn those off.
  */
 - (void)enteredBackground
@@ -225,7 +225,7 @@
     for (CBService *service in [servicePeripheral services]) {
         if ([[service UUID] isEqual:[CBUUID UUIDWithString:kDataServiceUUIDString]]) {
             
-            // Find the temperature characteristic
+            // Find the read characteristic
             for (CBCharacteristic *characteristic in [service characteristics]) {
                 if ( [[characteristic UUID] isEqual:[CBUUID UUIDWithString:kWriteCharacteristicUUIDString]] ) {
                     
@@ -237,14 +237,14 @@
     }
 }
 
-/** Coming back from the background, we want to register for notifications again for the temperature changes */
+/** Coming back from the background, we want to register for notifications again for the read changes */
 - (void)enteredForeground
 {
     // Find the fishtank service
     for (CBService *service in [servicePeripheral services]) {
         if ([[service UUID] isEqual:[CBUUID UUIDWithString:kDataServiceUUIDString]]) {
             
-            // Find the temperature characteristic
+            // Find the read characteristic
             for (CBCharacteristic *characteristic in [service characteristics]) {
                 if ( [[characteristic UUID] isEqual:[CBUUID UUIDWithString:kWriteCharacteristicUUIDString]] ) {
                     

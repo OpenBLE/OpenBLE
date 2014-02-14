@@ -34,6 +34,7 @@
 - (void) viewDidLoad
 {
     [super viewDidLoad];
+	// Do any additional setup after loading the view.
     
     //Tell Discovery to report to us if anything happens with our peripherals
     [[LeDiscovery sharedInstance] setDiscoveryDelegate:self];

@@ -27,18 +27,24 @@
 {
     self = [super initWithStyle:style];
     if (self) {
-
+        // Custom initialization
     }
     return self;
 }
 
-//stuff that needs to happen once
+//stuff that needs to happen once on creation
 - (void) viewDidLoad
 {
     [super viewDidLoad];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterBackgroundNotification:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterForegroundNotification:) name:UIApplicationWillEnterForegroundNotification object:nil];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
 }
 
 //stuff that needs to happen every time we come back to this view controller
@@ -90,6 +96,23 @@
 /****************************************************************************/
 /*							TableView Delegates								*/
 /****************************************************************************/
+- (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
+{
+	return 2;
+}
+
+- (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+	NSInteger	res = 0;
+    
+	if (section == 0)
+		res = [[[LeDiscovery sharedInstance] connectedPeripherals] count];
+	else
+		res = [[[LeDiscovery sharedInstance] foundPeripherals] count];
+    
+	return res;
+}
+
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
 	CBPeripheral	*peripheral;
@@ -132,43 +155,6 @@
 	return cell;
 }
 
-- (NSInteger) numberOfSectionsInTableView:(UITableView *)tableView
-{
-	return 2;
-}
-
-- (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-	NSInteger	res = 0;
-    
-	if (section == 0)
-		res = [[[LeDiscovery sharedInstance] connectedPeripherals] count];
-	else
-		res = [[[LeDiscovery sharedInstance] foundPeripherals] count];
-    
-	return res;
-}
-
-- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{  
-	CBPeripheral	*peripheral;
-	NSArray			*devices;
-	NSInteger		row	= [indexPath row];
-	
-	if ([indexPath section] == 0) {
-        //connected devices, segue on over
-		devices = [[LeDiscovery sharedInstance] connectedPeripherals];
-        currentPeripheral = [devices objectAtIndex:row];
-        [self manualSegue];
-
-	} else {
-        //found devices, send off connect which will segue if successful
-		devices = [[LeDiscovery sharedInstance] foundPeripherals];
-    	peripheral = (CBPeripheral*)[devices objectAtIndex:row];
-        [[LeDiscovery sharedInstance] connectPeripheral:peripheral];
-	}
-}
-
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return YES;
@@ -202,6 +188,42 @@
     {
         return @"disconnect";
     }
+}
+
+/*
+ // Override to support rearranging the table view.
+ - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+ {
+ }
+ */
+
+/*
+ // Override to support conditional rearranging of the table view.
+ - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+ {
+ // Return NO if you do not want the item to be re-orderable.
+ return YES;
+ }
+ */
+
+- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{  
+	CBPeripheral	*peripheral;
+	NSArray			*devices;
+	NSInteger		row	= [indexPath row];
+	
+	if ([indexPath section] == 0) {
+        //connected devices, segue on over
+		devices = [[LeDiscovery sharedInstance] connectedPeripherals];
+        currentPeripheral = [devices objectAtIndex:row];
+        [self manualSegue];
+
+	} else {
+        //found devices, send off connect which will segue if successful
+		devices = [[LeDiscovery sharedInstance] foundPeripherals];
+    	peripheral = (CBPeripheral*)[devices objectAtIndex:row];
+        [[LeDiscovery sharedInstance] connectPeripheral:peripheral];
+	}
 }
 
 

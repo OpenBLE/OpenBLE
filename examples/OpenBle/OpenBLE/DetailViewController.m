@@ -54,6 +54,10 @@
 
     //set peripheral name into navigation header
     self.navigationItem.title = [[currentlyDisplayingService peripheral] name];
+    
+    //we want to know if we went into the background or came back
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterBackgroundNotification:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterForegroundNotification:) name:UIApplicationWillEnterForegroundNotification object:nil];
 }
 
 - (void)didReceiveMemoryWarning
@@ -154,6 +158,24 @@
 - (void) discoveryDidRefresh
 {
     //shouldnt get this as we disable discovery in the Discovery class
+}
+
+
+#pragma mark -
+#pragma mark Backgrounding Methods
+/****************************************************************************/
+/*                       Bacgrounding Methods                               */
+/****************************************************************************/
+- (void)didEnterBackgroundNotification:(NSNotification*)notification
+{
+    //Tell service we entered background
+    [currentlyDisplayingService enteredBackground];
+}
+
+- (void)didEnterForegroundNotification:(NSNotification*)notification
+{
+    //Tell service we entered foreground
+    [currentlyDisplayingService enteredForeground];
 }
 
 @end

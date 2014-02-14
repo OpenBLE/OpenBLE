@@ -10,6 +10,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ScannerViewController.h"
+#import "LeService.h"
 
 @implementation ScannerViewController
 
@@ -35,6 +36,9 @@
 - (void) viewDidLoad
 {
     [super viewDidLoad];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterBackgroundNotification:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterForegroundNotification:) name:UIApplicationWillEnterForegroundNotification object:nil];
 }
 
 //stuff that needs to happen every time we come back to this view controller
@@ -230,6 +234,24 @@
 {
     currentPeripheral = peripheral;
     [self manualSegue];
+}
+
+
+#pragma mark -
+#pragma mark Backgrounding Methods
+/****************************************************************************/
+/*                       Bacgrounding Methods                               */
+/****************************************************************************/
+- (void)didEnterBackgroundNotification:(NSNotification*)notification
+{
+    //stop scanning to save battery life
+    [[LeDiscovery sharedInstance] stopScanning];
+}
+
+- (void)didEnterForegroundNotification:(NSNotification*)notification
+{
+    //start scanning again
+    [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
 }
 
 @end

@@ -21,10 +21,6 @@ extern NSString *RedbearDataServiceUUIDString;
 extern NSString *RedbearWriteCharacteristicUUIDString;
 extern NSString *RedbearReadCharacteristicUUIDString;
 
-extern NSString *kDataServiceEnteredBackgroundNotification;
-extern NSString *kDataServiceEnteredForegroundNotification;
-
-
 @interface LeService : NSObject
 
 @end

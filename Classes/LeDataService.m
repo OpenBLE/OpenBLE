@@ -15,19 +15,17 @@
 
 @interface LeDataService() <CBPeripheralDelegate> {
 @private
+    
+    NSMutableArray *serviceCBUUIDs;
+    NSMutableArray *writeCBUUIDs;
+    NSMutableArray *readCBUUIDs;
+    
     CBPeripheral		*servicePeripheral;
-    
-    CBService			*dataService;
-    
-    NSString            *kPeripheralUUIDString;
-    NSString            *kDataServiceUUIDString;
-    NSString            *kWriteCharacteristicUUIDString;
-    
+
     CBCharacteristic    *writeCharacteristic;
     CBCharacteristic    *readCharacteristic;
     
-    CBUUID              *readUUID;
-    CBUUID              *writeUUID;
+    CBService			*dataService;
 
     id<LeDataProtocol>	peripheralDelegate;
 }
@@ -45,27 +43,51 @@
 /****************************************************************************/
 /*								Init										*/
 /****************************************************************************/
-- (id) initWithPeripheral:(CBPeripheral *)peripheral delegate:(id<LeDataProtocol>)delegate
-{
+- (id) initWithPeripheral:(CBPeripheral *)peripheral delegate:(id<LeDataProtocol>)delegate{
     self = [super init];
     if (self) {
         servicePeripheral = peripheral;
         [servicePeripheral setDelegate:self];
 		peripheralDelegate = delegate;
         
-        kPeripheralUUIDString = (__bridge_transfer NSString *)CFUUIDCreateString(NULL, peripheral.UUID);
+        //Load the uuids from plist
+        NSString *errorDesc = nil;
+        NSPropertyListFormat format;
+        NSString *plistPath;
+        NSString *rootPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                                  NSUserDomainMask, YES) objectAtIndex:0];
+        plistPath = [rootPath stringByAppendingPathComponent:@"LE-UUIDs.plist"];
+        if (![[NSFileManager defaultManager] fileExistsAtPath:plistPath]) {
+            plistPath = [[NSBundle mainBundle] pathForResource:@"LE-UUIDs" ofType:@"plist"];
+        }
+        NSData *plistXML = [[NSFileManager defaultManager] contentsAtPath:plistPath];
+        NSDictionary *LE_UUIDArrays = (NSDictionary *)[NSPropertyListSerialization
+                                              propertyListFromData:plistXML
+                                              mutabilityOption:NSPropertyListMutableContainersAndLeaves
+                                              format:&format
+                                              errorDescription:&errorDesc];
+        if (!LE_UUIDArrays) {
+            NSLog(@"Error reading plist: %@, format: %u", errorDesc, format);
+        }
 
-        if([peripheral.name isEqualToString:RedbearPeripheralNameString]){
-            kWriteCharacteristicUUIDString = RedbearWriteCharacteristicUUIDString;
-            kDataServiceUUIDString = RedbearDataServiceUUIDString;
-            writeUUID	= [CBUUID UUIDWithString:RedbearWriteCharacteristicUUIDString];
-            readUUID	= [CBUUID UUIDWithString:RedbearReadCharacteristicUUIDString];
-        }else
-        {
-            kWriteCharacteristicUUIDString = XadowWriteCharacteristicUUIDString;
-            kDataServiceUUIDString = XadowDataServiceUUIDString;
-            writeUUID	= [CBUUID UUIDWithString:XadowWriteCharacteristicUUIDString];
-            readUUID	= [CBUUID UUIDWithString:XadowReadCharacteristicUUIDString];
+        NSArray *serviceUUIDStrings = [LE_UUIDArrays objectForKey:@"service-uuids"];
+        NSArray *writeUUIDStrings = [LE_UUIDArrays objectForKey:@"write-uuids"];
+        NSArray *readUUIDStrings = [LE_UUIDArrays objectForKey:@"read-uuids"];
+        
+        serviceCBUUIDs=[[NSMutableArray alloc] init];
+        writeCBUUIDs=[[NSMutableArray alloc] init];
+        readCBUUIDs=[[NSMutableArray alloc] init];
+        
+        for(NSString *uuidString in serviceUUIDStrings){
+            [serviceCBUUIDs addObject:[CBUUID UUIDWithString:uuidString]];
+        }
+        
+        for(NSString *uuidString in writeUUIDStrings){
+            [writeCBUUIDs addObject:[CBUUID UUIDWithString:uuidString]];
+        }
+        
+        for(NSString *uuidString in readUUIDStrings){
+            [readCBUUIDs addObject:[CBUUID UUIDWithString:uuidString]];
         }
 	}
     return self;
@@ -101,19 +123,15 @@
 
 - (void) start
 {
-	CBUUID	*serviceUUID	= [CBUUID UUIDWithString:kDataServiceUUIDString];
-	NSArray	*serviceArray	= [NSArray arrayWithObjects:serviceUUID, nil];
-
-    [servicePeripheral discoverServices:serviceArray];
+    [servicePeripheral discoverServices:serviceCBUUIDs];
 }
 
 - (void) peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error
 {
 	NSArray		*services	= nil;
-	NSArray		*uuids	= [NSArray arrayWithObjects:writeUUID, // Write Characteristic
-								   readUUID, // Read Characteristic
-								   nil];
-
+    NSMutableArray* uuids = [NSMutableArray arrayWithArray:writeCBUUIDs];
+    [uuids addObjectsFromArray: readCBUUIDs];
+    
 	if (peripheral != servicePeripheral) {
 		NSLog(@"Wrong Peripheral.\n");
 		return;
@@ -132,12 +150,12 @@
 	dataService = nil;
     
 	for (CBService *service in services) {
-		if ([[service UUID] isEqual:[CBUUID UUIDWithString:kDataServiceUUIDString]]) {
+		if ([serviceCBUUIDs containsObject:[service UUID]]) {
 			dataService = service;
 			break;
 		}
 	}
-
+    
 	if (dataService) {
 		[peripheral discoverCharacteristics:uuids forService:dataService];
 	}
@@ -166,12 +184,12 @@
 	for (characteristic in characteristics) {
         NSLog(@"discovered characteristic %@", [characteristic UUID]);
         
-		if ([[characteristic UUID] isEqual:readUUID]) { // Read
+		if ([readCBUUIDs containsObject:[characteristic UUID] ]) { // Read
             NSLog(@"Discovered Read Characteristic");
 			readCharacteristic = characteristic;
             [peripheral setNotifyValue:YES forCharacteristic:characteristic];
 		}
-        else if ([[characteristic UUID] isEqual:writeUUID]) { // Write
+        else if ([writeCBUUIDs containsObject:[characteristic UUID]]) { // Write
             NSLog(@"Discovered Write Characteristic");
 			writeCharacteristic = characteristic;
 		} 
@@ -207,13 +225,9 @@
         return;
     }
 
-    if([kDataServiceUUIDString isEqualToString:RedbearDataServiceUUIDString]){
-        [servicePeripheral writeValue:data forCharacteristic:writeCharacteristic type:CBCharacteristicWriteWithoutResponse];
-        [peripheralDelegate didWriteFromService:self withError:nil];
-    }
-    else{
+
         [servicePeripheral writeValue:data forCharacteristic:writeCharacteristic type:CBCharacteristicWriteWithResponse];
-    }
+
 }
 
 /** If we're connected, we don't want to be getting read change notifications while we're in the background.
@@ -223,11 +237,11 @@
 {
     // Find the fishtank service
     for (CBService *service in [servicePeripheral services]) {
-        if ([[service UUID] isEqual:[CBUUID UUIDWithString:kDataServiceUUIDString]]) {
+        if ([serviceCBUUIDs containsObject:[service UUID]]) {
             
             // Find the read characteristic
             for (CBCharacteristic *characteristic in [service characteristics]) {
-                if ( [[characteristic UUID] isEqual:[CBUUID UUIDWithString:kWriteCharacteristicUUIDString]] ) {
+                if ( [writeCBUUIDs containsObject:[characteristic UUID]] ) {
                     
                     // And STOP getting notifications from it
                     [servicePeripheral setNotifyValue:NO forCharacteristic:characteristic];
@@ -242,11 +256,11 @@
 {
     // Find the fishtank service
     for (CBService *service in [servicePeripheral services]) {
-        if ([[service UUID] isEqual:[CBUUID UUIDWithString:kDataServiceUUIDString]]) {
+        if ([serviceCBUUIDs containsObject:[service UUID]]) {
             
             // Find the read characteristic
             for (CBCharacteristic *characteristic in [service characteristics]) {
-                if ( [[characteristic UUID] isEqual:[CBUUID UUIDWithString:kWriteCharacteristicUUIDString]] ) {
+                if ( [writeCBUUIDs containsObject:[characteristic UUID]] ) {
                     
                     // And START getting notifications from it
                     [servicePeripheral setNotifyValue:YES forCharacteristic:characteristic];
@@ -269,7 +283,7 @@
 	}
     
     /* Data to read */
-    if ([[characteristic UUID] isEqual:readUUID]) {
+    if ([readCBUUIDs containsObject:[characteristic UUID]]) {
         [peripheralDelegate serviceDidReceiveData:[readCharacteristic value] fromService:self];
         return;
     }

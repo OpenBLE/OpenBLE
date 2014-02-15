@@ -44,6 +44,7 @@
 /*								Actions										*/
 /****************************************************************************/
 - (void) startScanningForUUIDString:(NSString *)uuidString;
+
 - (void) stopScanning;
 
 - (void) connectPeripheral:(CBPeripheral*)peripheral;

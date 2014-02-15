@@ -12,10 +12,14 @@
 
 #import "LeDiscovery.h"
 
-
 @interface LeDiscovery () <CBCentralManagerDelegate, CBPeripheralDelegate> {
 	CBCentralManager    *centralManager;
 	BOOL				pendingInit;
+    
+    NSDictionary *scanOptions;
+    NSDictionary *connectOptions;
+    
+    dispatch_queue_t eventQueue;
 }
 @end
 
@@ -48,7 +52,36 @@
     self = [super init];
     if (self) {
 		pendingInit = YES;
-		centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:dispatch_get_main_queue()];
+        
+        //Load the uuids from plist
+        NSString *errorDesc = nil;
+        NSPropertyListFormat format;
+        NSString *plistPath;
+        NSString *rootPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
+                                                                  NSUserDomainMask, YES) objectAtIndex:0];
+        plistPath = [rootPath stringByAppendingPathComponent:@"LE-Options.plist"];
+        if (![[NSFileManager defaultManager] fileExistsAtPath:plistPath]) {
+            plistPath = [[NSBundle mainBundle] pathForResource:@"LE-Options" ofType:@"plist"];
+        }
+        NSData *plistXML = [[NSFileManager defaultManager] contentsAtPath:plistPath];
+        NSDictionary *LE_OptionsDictionaries = (NSDictionary *)[NSPropertyListSerialization
+                                                       propertyListFromData:plistXML
+                                                       mutabilityOption:NSPropertyListMutableContainersAndLeaves
+                                                       format:&format
+                                                       errorDescription:&errorDesc];
+        if (!LE_OptionsDictionaries) {
+            NSLog(@"Error reading plist: %@, format: %u", errorDesc, format);
+        }
+        
+        scanOptions = [LE_OptionsDictionaries objectForKey:@"scan-options"];
+        connectOptions = [LE_OptionsDictionaries objectForKey:@"connect-options"];
+        NSDictionary *initOptions = [LE_OptionsDictionaries objectForKey:@"init-options"];
+        
+        eventQueue = dispatch_queue_create("com.openble.mycentral", DISPATCH_QUEUE_SERIAL);
+        
+        dispatch_set_target_queue(eventQueue, dispatch_get_main_queue());
+
+		centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:eventQueue options:initOptions];
         
 		foundPeripherals = [[NSMutableArray alloc] init];
 		connectedPeripherals = [[NSMutableArray alloc] init];
@@ -147,7 +180,7 @@
 	
 	/* Add to list. */
 	for (peripheral in peripherals) {
-		[central connectPeripheral:peripheral options:nil];
+		[central connectPeripheral:peripheral options:connectOptions];
 	}
 	[discoveryDelegate discoveryDidRefresh];
 }
@@ -155,7 +188,7 @@
 
 - (void) centralManager:(CBCentralManager *)central didRetrievePeripheral:(CBPeripheral *)peripheral
 {
-	[central connectPeripheral:peripheral options:nil];
+	[central connectPeripheral:peripheral options:connectOptions];
 	[discoveryDelegate discoveryDidRefresh];
 }
 
@@ -166,6 +199,9 @@
 	[self removeSavedDevice:UUID];
 }
 
+-(void)centralManager:(CBCentralManager *)central willRestoreState:(NSDictionary *)dict{
+
+}
 
 
 #pragma mark -
@@ -183,12 +219,9 @@
     else {
         uuidArray = nil;
     }
-    
-//	NSDictionary	*options	= [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:YES] forKey:CBCentralManagerScanOptionAllowDuplicatesKey];
-    
-	[centralManager scanForPeripheralsWithServices:uuidArray options:nil];
+        
+	[centralManager scanForPeripheralsWithServices:uuidArray options:scanOptions];
 }
-
 
 - (void) stopScanning
 {
@@ -214,7 +247,7 @@
 - (void) connectPeripheral:(CBPeripheral*)peripheral
 {
 	if (![peripheral isConnected]) {
-		[centralManager connectPeripheral:peripheral options:nil];
+		[centralManager connectPeripheral:peripheral options:connectOptions];
 	}
 }
 

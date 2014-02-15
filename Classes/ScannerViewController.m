@@ -10,7 +10,6 @@
 #import <Foundation/Foundation.h>
 
 #import "ScannerViewController.h"
-#import "LeService.h"
 
 @implementation ScannerViewController
 

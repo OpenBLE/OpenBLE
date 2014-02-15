@@ -12,7 +12,6 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
-#import "LeService.h"
 
 
 
@@ -34,6 +33,7 @@
 @interface LeDataService : NSObject
 
 - (id) initWithPeripheral:(CBPeripheral *)peripheral delegate:(id<LeDataProtocol>)delegate;
+
 - (void) setDelegate:(id<LeDataProtocol>)delegate;
 
 - (void) reset;

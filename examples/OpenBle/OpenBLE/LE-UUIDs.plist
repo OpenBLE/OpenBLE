@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>service-uuids</key>
+	<array>
+		<string>FFF0</string>
+		<string>713D0000-503E-4C75-BA94-3148F18D941E</string>
+	</array>
+	<key>write-uuids</key>
+	<array>
+		<string>FFF2</string>
+		<string>713D0003-503E-4C75-BA94-3148F18D941E</string>
+	</array>
+	<key>read-uuids</key>
+	<array>
+		<string>FFF1</string>
+		<string>713D0002-503E-4C75-BA94-3148F18D941E</string>
+	</array>
+</dict>
+</plist>

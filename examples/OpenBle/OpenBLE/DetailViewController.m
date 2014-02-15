@@ -45,12 +45,12 @@
     
     //Tell Discovery to report to us if anything happens with our peripherals
     [[LeDiscovery sharedInstance] setDiscoveryDelegate:self];
-
+    
     //We left our peripheral in our root controller
     //This is a bit messy but moving between Storyboards is only half supported
     UINavigationController *navController = (UINavigationController*)[self.navigationController presentingViewController];
     ScannerViewController *rootController =(ScannerViewController*)[navController.viewControllers objectAtIndex:0];
-
+    
     //Create a new DataService with peripheral, and tell it to report to us
     self.currentlyDisplayingService = [[LeDataService alloc] initWithPeripheral:(CBPeripheral*)rootController.currentPeripheral delegate:self];
     
@@ -59,7 +59,7 @@
     
     //Until we know service has started, disable sending
     [sendButton setEnabled:NO];
-
+    
     //set peripheral name into navigation header
     self.navigationItem.title = [[currentlyDisplayingService peripheral] name];
     
@@ -92,7 +92,7 @@
     //send data
     NSData* tosend=[[input text] dataUsingEncoding:NSUTF8StringEncoding];
     [currentlyDisplayingService write:tosend];
-
+    
     //put sent text in chat box
     NSString* newStr = [[NSString alloc] initWithFormat:@"< %@\n",[input text]] ;
     [response setText:[newStr stringByAppendingString:response.text]];
@@ -115,7 +115,7 @@
 {
     if (service != currentlyDisplayingService)
         return;
-
+    
     //format text and place in chat box
     NSString* newStr = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] ;
     NSString* newStr2 = [[NSString alloc] initWithFormat:@"> %@",newStr] ;
@@ -162,9 +162,11 @@
     //disable send
     [sendButton setEnabled:NO];
     
-    //Try to reconnect
-    [[LeDiscovery sharedInstance] connectPeripheral:peripheral];
-
+    //If we're not in the background, or we are but we want to maintain connection, Try to reconnect
+    if((background && [notifySwitch isOn]) || (!background)){
+        [[LeDiscovery sharedInstance] connectPeripheral:peripheral];
+    }
+    
     //may also just want to automatically go back to chooser
     //We have to manually dismiss our view controller instead of using IB's back button
     //[[self.navigationController presentingViewController] dismissViewControllerAnimated:YES completion:nil];
@@ -192,15 +194,10 @@
 - (void)didEnterBackgroundNotification:(NSNotification*)notification
 {
     //if we were trying to reconnect to a peripheral, lets stop for battery life
-    if([[currentlyDisplayingService peripheral] state] == CBPeripheralStateConnecting)
+    if([[currentlyDisplayingService peripheral] state] == CBPeripheralStateConnecting || ![notifySwitch isOn])
     {
-        [[LeDiscovery sharedInstance] disconnectPeripheral:[currentlyDisplayingService peripheral]];
-    }
-    
-    //if notify is off
-    if(![notifySwitch isOn]){
-        //Tell service we entered background so we don't get notifications
-        [currentlyDisplayingService enteredBackground];
+        [currentlyDisplayingService enteredBackground]; //disable any notifications we have
+        [[LeDiscovery sharedInstance] disconnectPeripheral:[currentlyDisplayingService peripheral]]; //disconnect
     }
     
     background = YES;
@@ -212,12 +209,6 @@
     if([[currentlyDisplayingService peripheral] state] == CBPeripheralStateDisconnected)
     {
         [[LeDiscovery sharedInstance] connectPeripheral:[currentlyDisplayingService peripheral]];
-    }
-    
-    //if notify is off
-    if(![notifySwitch isOn]){
-        //Tell service we entered foreground so we get text again
-        [currentlyDisplayingService enteredForeground];
     }
     
     background = NO;

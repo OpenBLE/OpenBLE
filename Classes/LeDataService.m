@@ -18,6 +18,7 @@
     
     NSMutableArray *serviceCBUUIDs;
     NSMutableArray *writeCBUUIDs;
+    NSMutableArray *writeWithResponseCBUUIDs;
     NSMutableArray *readCBUUIDs;
     
     CBPeripheral		*servicePeripheral;
@@ -72,10 +73,15 @@
 
         NSArray *serviceUUIDStrings = [LE_UUIDArrays objectForKey:@"service-uuids"];
         NSArray *writeUUIDStrings = [LE_UUIDArrays objectForKey:@"write-uuids"];
+
+        NSArray *writeWithResponseUUIDStrings = [LE_UUIDArrays objectForKey:@"write-with-response-uuids"];
+
         NSArray *readUUIDStrings = [LE_UUIDArrays objectForKey:@"read-uuids"];
         
         serviceCBUUIDs=[[NSMutableArray alloc] init];
         writeCBUUIDs=[[NSMutableArray alloc] init];
+        writeWithResponseCBUUIDs=[[NSMutableArray alloc] init];
+
         readCBUUIDs=[[NSMutableArray alloc] init];
         
         for(NSString *uuidString in serviceUUIDStrings){
@@ -84,6 +90,11 @@
         
         for(NSString *uuidString in writeUUIDStrings){
             [writeCBUUIDs addObject:[CBUUID UUIDWithString:uuidString]];
+        }
+        
+        for(NSString *uuidString in writeWithResponseUUIDStrings){
+            [writeCBUUIDs addObject:[CBUUID UUIDWithString:uuidString]];
+            [writeWithResponseCBUUIDs addObject:[CBUUID UUIDWithString:uuidString]];
         }
         
         for(NSString *uuidString in readUUIDStrings){
@@ -225,9 +236,14 @@
         return;
     }
 
-
+    if([writeWithResponseCBUUIDs containsObject:writeCharacteristic])
+    {
+        [servicePeripheral writeValue:data forCharacteristic:writeCharacteristic type:CBCharacteristicWriteWithoutResponse];
+        [peripheralDelegate didWriteFromService:self withError:nil];
+    }
+    else{
         [servicePeripheral writeValue:data forCharacteristic:writeCharacteristic type:CBCharacteristicWriteWithResponse];
-
+    }
 }
 
 /** If we're connected, we don't want to be getting read change notifications while we're in the background.

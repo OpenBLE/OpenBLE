@@ -94,6 +94,18 @@
     assert(NO);
 }
 
+- (void) clearDevices
+{
+    [foundPeripherals removeAllObjects];
+    [connectedPeripherals removeAllObjects];
+    [discoveryDelegate discoveryDidRefresh];
+}
+
+- (void) clearFoundPeripherals
+{
+    [foundPeripherals removeAllObjects];
+    [discoveryDelegate discoveryDidRefresh];
+}
 
 #pragma mark -
 #pragma mark Restoring
@@ -334,13 +346,6 @@
     [foundPeripherals addObject:peripheral];
     
 	[discoveryDelegate peripheralDidDisconnect:peripheral];
-}
-
-- (void) clearDevices
-{
-    [foundPeripherals removeAllObjects];
-    [connectedPeripherals removeAllObjects];
-    [discoveryDelegate discoveryDidRefresh];
 }
 
 @end

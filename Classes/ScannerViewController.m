@@ -72,7 +72,7 @@
 {
     [self.refreshControl beginRefreshing];
     [[LeDiscovery sharedInstance] stopScanning];
-    [[[LeDiscovery sharedInstance] foundPeripherals] removeAllObjects];
+    [[LeDiscovery sharedInstance] clearFoundPeripherals];
     [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
     [self.tableView reloadData];
     [self.refreshControl endRefreshing];
@@ -161,32 +161,17 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if([indexPath section])
-    {
-        [[[LeDiscovery sharedInstance] foundPeripherals] removeObjectAtIndex:indexPath.row];
-        [self.tableView reloadData];
-    }
-    else
-    {
-        CBPeripheral	*peripheral;
-        NSArray			*devices;
-        devices = [[LeDiscovery sharedInstance] connectedPeripherals];
-        peripheral = [devices objectAtIndex:indexPath.row];
-        
-        [[LeDiscovery sharedInstance] disconnectPeripheral:peripheral];
-    }
+    CBPeripheral	*peripheral;
+    NSArray			*devices;
+    devices = [[LeDiscovery sharedInstance] connectedPeripherals];
+    peripheral = [devices objectAtIndex:indexPath.row];
+    
+    [[LeDiscovery sharedInstance] disconnectPeripheral:peripheral];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if([indexPath section])
-    {
-        return @"delete";
-    }
-    else
-    {
-        return @"disconnect";
-    }
+    return @"disconnect";
 }
 
 /*

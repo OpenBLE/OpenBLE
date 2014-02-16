@@ -50,10 +50,11 @@
 - (void) connectPeripheral:(CBPeripheral*)peripheral;
 - (void) disconnectPeripheral:(CBPeripheral*)peripheral;
 
+- (void) clearFoundPeripherals;
 
 /****************************************************************************/
 /*							Access to the devices							*/
 /****************************************************************************/
-@property (strong, nonatomic) NSMutableArray    *foundPeripherals;
-@property (strong, nonatomic) NSMutableArray	*connectedPeripherals;
+@property (strong, nonatomic, readonly) NSMutableArray        *foundPeripherals;
+@property (strong, nonatomic, readonly) NSMutableArray        *connectedPeripherals;
 @end

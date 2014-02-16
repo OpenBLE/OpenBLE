@@ -134,6 +134,10 @@
 
 - (void) start
 {
+    //doing this again, as after a connect the Discovery takes peripheral back
+    //if we disconnect, then reconnect, we would have lost delegate
+    [servicePeripheral setDelegate:self];
+    
     [servicePeripheral discoverServices:serviceCBUUIDs];
 }
 

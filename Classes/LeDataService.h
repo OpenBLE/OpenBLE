@@ -32,9 +32,9 @@
 /****************************************************************************/
 @interface LeDataService : NSObject
 
-- (id) initWithPeripheral:(CBPeripheral *)peripheral delegate:(id<LeDataProtocol>)delegate;
+- (id) initWithPeripheral:(CBPeripheral *)peripheral controller:(id<LeDataProtocol>)controller;
 
-- (void) setDelegate:(id<LeDataProtocol>)delegate;
+- (void) setController:(id<LeDataProtocol>)controller;
 
 - (void) reset;
 - (void) start;

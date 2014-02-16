@@ -44,12 +44,12 @@
 /****************************************************************************/
 /*								Init										*/
 /****************************************************************************/
-- (id) initWithPeripheral:(CBPeripheral *)peripheral delegate:(id<LeDataProtocol>)delegate{
+- (id) initWithPeripheral:(CBPeripheral *)peripheral controller:(id<LeDataProtocol>)controller{
     self = [super init];
     if (self) {
         servicePeripheral = peripheral;
         [servicePeripheral setDelegate:self];
-		peripheralDelegate = delegate;
+		peripheralDelegate = controller;
         
         //Load the uuids from plist
         NSString *errorDesc = nil;
@@ -127,9 +127,9 @@
 /****************************************************************************/
 /*							Service Interactions							*/
 /****************************************************************************/
-- (void) setDelegate:(id<LeDataProtocol>)delegate
+- (void) setController:(id<LeDataProtocol>)controller
 {
-    peripheralDelegate = delegate;
+    peripheralDelegate = controller;
 }
 
 - (void) start

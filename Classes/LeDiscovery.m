@@ -28,6 +28,7 @@
 
 @synthesize foundPeripherals;
 @synthesize connectedPeripherals;
+@synthesize advertisingData;
 @synthesize discoveryDelegate;
 
 
@@ -84,6 +85,7 @@
         
 		foundPeripherals = [[NSMutableArray alloc] init];
 		connectedPeripherals = [[NSMutableArray alloc] init];
+        advertisingData = [[NSMutableDictionary alloc] init];
 	}
     return self;
 }
@@ -98,11 +100,16 @@
 {
     [foundPeripherals removeAllObjects];
     [connectedPeripherals removeAllObjects];
+    [advertisingData removeAllObjects];
     [discoveryDelegate discoveryDidRefresh];
 }
 
 - (void) clearFoundPeripherals
 {
+    for(CBPeripheral *peripheral in foundPeripherals){
+        [advertisingData removeObjectForKey:[peripheral identifier]];
+
+    }
     [foundPeripherals removeAllObjects];
     [discoveryDelegate discoveryDidRefresh];
 }
@@ -292,8 +299,15 @@
 {
 	if (![foundPeripherals containsObject:peripheral]) {
 		[foundPeripherals addObject:peripheral];
-		[discoveryDelegate discoveryDidRefresh];
 	}
+    
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    [dict setObject:RSSI forKey:@"RSSI"];
+    [dict setObject:advertisementData forKey:@"advertisementData"];
+    
+    [advertisingData setObject:dict forKey:[peripheral identifier]];
+
+    [discoveryDelegate discoveryDidRefresh];
 }
 
 
@@ -322,6 +336,9 @@
 	if ([foundPeripherals containsObject:peripheral])
 		[foundPeripherals removeObject:peripheral];
     
+    [peripheral setDelegate:self];
+    
+    [discoveryDelegate discoveryDidRefresh];
     [discoveryDelegate peripheralDidConnect:peripheral];
 }
 
@@ -346,6 +363,20 @@
     [foundPeripherals addObject:peripheral];
     
 	[discoveryDelegate peripheralDidDisconnect:peripheral];
+}
+
+
+#pragma mark -
+#pragma mark Peripheral handling
+/****************************************************************************/
+/*						Peripheral handling                                 */
+/****************************************************************************/
+-(void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(NSError *)error
+{
+    NSMutableDictionary *dict = [advertisingData objectForKey:[peripheral identifier]];
+    [dict setObject:[peripheral RSSI] forKey:@"RSSI"];
+    [discoveryDelegate discoveryDidRefresh];
+
 }
 
 @end

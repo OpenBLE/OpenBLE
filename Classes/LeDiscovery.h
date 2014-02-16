@@ -57,4 +57,5 @@
 /****************************************************************************/
 @property (strong, nonatomic, readonly) NSMutableArray        *foundPeripherals;
 @property (strong, nonatomic, readonly) NSMutableArray        *connectedPeripherals;
+@property (strong, nonatomic, readonly) NSMutableDictionary   *advertisingData;
 @end

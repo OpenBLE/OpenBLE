@@ -10,7 +10,7 @@
 	<key>scan-options</key>
 	<dict>
 		<key>kCBScanOptionAllowDuplicates</key>
-		<false/>
+		<true/>
 	</dict>
 	<key>connect-options</key>
 	<dict>

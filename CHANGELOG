@@ -1,9 +1,26 @@
 # Changelog
 
+
+## Version 1.0.0
+
+* ScannerViewController, BLECell and ScannerStoryboard.storybaord are all available as dependancies now. See openble.github.io or the example for info on how to use them.
+
+* LeDiscovery changes: foundperipherals and connectedperipherals are readonly. New method clearFoundPeripherals
+
+* LeDiscovery changes: No more LeServiceDelegate. peripheralDidConnect and peripheralDidDisconnect become part of LeDiscoveryDelegate. serviceDidReset serviceDidChangeStatus are removed.
+
+* LeDataService.h changes: serviceDidChangeStatus and serviceDidReset are removed from LeDataProtocol
+
+* LeDataService.h changes: UUIDs are moved out to plist files. You'll need to bring these in manually from /Resources but now you can 'relatively' painlessly keep user options separate. Adding new device UUIDs to the LE-UUIDs.plist should be self explanatory. There are read UUIDs, write UUIDs, write with response UUIDs, and service UUIDs.
+
+Options need some extra explanation. init-options is mapped to the CBCentralManager initWithDelegate options. connect-options is mapped to the CBCentralManager connectPeripheral options and scan-options is mapped to the CBCentralManager scanForPeripheralsWithServices options. Look up each of these 3 to see what options are available. Normally you'd enter they defined constant key, for instance, CBCentralManagerScanOptionAllowDuplicatesKey into the array. However since we're storing strings in a plist, we don't have access to that constant. What we do have access to the string it defines. So to enable CBCentralManagerScanOptionAllowDuplicatesKey we have to enter kCBScanOptionAllowDuplicates. To find the correct keys string you'll have to NSLog the key or look it up. Again we don't think this is ideal, so we're looking for feedback on better options.
+
+
+
 ## Version 0.0.3
 
-*Added didWriteFromService callback when ack received for devices that support writewithresponse, or after we write for devices that don't. Allows proper async patterns for metering sends.
+* Added didWriteFromService callback when ack received for devices that support writewithresponse, or after we write for devices that don't. Allows proper async patterns for metering sends.
 
 ## Version 0.0.2
 
-*Moved repo out of personal to new Organization
+* Moved repo out of personal to new Organization

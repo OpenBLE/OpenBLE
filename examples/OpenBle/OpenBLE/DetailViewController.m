@@ -13,6 +13,7 @@
 @interface DetailViewController() {
 @private
     bool background;
+    NSTimer *RSSITimer;
 }
 @end
 
@@ -23,6 +24,7 @@
 @synthesize input;
 @synthesize sendButton;
 @synthesize notifySwitch;
+@synthesize RSSI;
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -76,6 +78,7 @@
 
 - (void) dealloc
 {
+    [RSSITimer invalidate];
     //nil delegates so nothing points to us
     [[LeDiscovery sharedInstance] setDiscoveryDelegate:nil];
     [currentlyDisplayingService setController:nil];
@@ -100,8 +103,16 @@
 
 -(IBAction)back:(id)sender
 {
+    [RSSITimer invalidate];
+    
     //We have to manually dismiss our view controller instead of using IB's back button
     [[self.navigationController presentingViewController] dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void) refreshRSSI
+{
+    self.RSSI.text = [[[currentlyDisplayingService peripheral]RSSI] stringValue ];
+    [[currentlyDisplayingService peripheral]readRSSI];
 }
 
 
@@ -137,8 +148,14 @@
 /** Confirms service started fully */
 - (void) serviceDidReceiveCharacteristicsFromService:(LeDataService*)service
 {
+    NSMutableDictionary *navbarTitleTextAttributes =[NSMutableDictionary dictionaryWithDictionary:self.navigationController.navigationBar.titleTextAttributes];
+    [navbarTitleTextAttributes setObject:[UIColor blackColor] forKey:NSForegroundColorAttributeName];
+    self.navigationController.navigationBar.titleTextAttributes = navbarTitleTextAttributes;
+
     //all services go, enable button
     [sendButton setEnabled:YES];
+    
+    RSSITimer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(refreshRSSI) userInfo:nil repeats:YES];
 }
 
 
@@ -159,6 +176,12 @@
 /** Peripheral disconnected -- do something? */
 -(void)peripheralDidDisconnect:(CBPeripheral *)peripheral
 {
+    [RSSITimer invalidate];
+
+    NSMutableDictionary *navbarTitleTextAttributes =[NSMutableDictionary dictionaryWithDictionary:self.navigationController.navigationBar.titleTextAttributes];
+    [navbarTitleTextAttributes setObject:[UIColor redColor] forKey:NSForegroundColorAttributeName];
+    self.navigationController.navigationBar.titleTextAttributes = navbarTitleTextAttributes;
+    
     //disable send
     [sendButton setEnabled:NO];
     
@@ -175,6 +198,8 @@
 /** Peripheral connected */
 - (void) peripheralDidConnect:(CBPeripheral *)peripheral
 {
+    RSSITimer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(refreshRSSI) userInfo:nil repeats:YES];
+
     //only get this if we reconnected, so restart service
     [currentlyDisplayingService start];
 }
@@ -193,6 +218,8 @@
 /****************************************************************************/
 - (void)didEnterBackgroundNotification:(NSNotification*)notification
 {
+    [RSSITimer invalidate];
+
     //if we were trying to reconnect to a peripheral, lets stop for battery life
     if([[currentlyDisplayingService peripheral] state] == CBPeripheralStateConnecting || ![notifySwitch isOn])
     {
@@ -205,6 +232,8 @@
 
 - (void)didEnterForegroundNotification:(NSNotification*)notification
 {
+    RSSITimer = [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(refreshRSSI) userInfo:nil repeats:YES];
+
     //if we're not connected, try to connect
     if([[currentlyDisplayingService peripheral] state] == CBPeripheralStateDisconnected)
     {

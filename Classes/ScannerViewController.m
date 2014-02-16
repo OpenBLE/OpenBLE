@@ -11,6 +11,7 @@
 
 #import "ScannerViewController.h"
 
+
 @implementation ScannerViewController
 
 @synthesize currentPeripheral;
@@ -49,13 +50,19 @@
 //stuff that needs to happen every time we come back to this view controller
 -(void)viewWillAppear:(BOOL)animated
 {
+    //Going to arbitrarily say you can only connect to one device at a time
+    //Want to continue getting RSSI data, and also can't peripheral delegates
+    //havent been changed when we come back here
+    //so disconnect if we came back with a live peripheral
+    if(currentPeripheral)
+        [[LeDiscovery sharedInstance] disconnectPeripheral:currentPeripheral];
+    
     [[LeDiscovery sharedInstance] setDiscoveryDelegate:self];
     
     [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
     
     [sensorsTable reloadData];
 }
-
 
 - (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
@@ -72,7 +79,7 @@
 {
     [self.refreshControl beginRefreshing];
     [[LeDiscovery sharedInstance] stopScanning];
-    [[[LeDiscovery sharedInstance] foundPeripherals] removeAllObjects];
+    [[LeDiscovery sharedInstance] clearFoundPeripherals];
     [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
     [self.tableView reloadData];
     [self.refreshControl endRefreshing];
@@ -81,13 +88,12 @@
 - (void)manualSegue
 {
     [[LeDiscovery sharedInstance] stopScanning];
-    
+
     //Switch to initial view controller of main storyboard
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MainStoryboard" bundle:nil];
     UIViewController *viewController = [storyboard instantiateInitialViewController];
     [self presentViewController:viewController animated:YES completion:nil];
 }
-
 
 
 #pragma mark -
@@ -141,6 +147,11 @@
         [cell.name setText:@"Peripheral"];
     }
     
+    NSDictionary *advertisingData = [[LeDiscovery sharedInstance] advertisingData];
+    NSDictionary *peripheralDictionary = [advertisingData objectForKey:[peripheral identifier]];
+    NSNumber *rssi = (NSNumber *)[peripheralDictionary objectForKey:@"RSSI"];
+    [cell.RSSI setText:[rssi stringValue]];
+    
     [cell.uuid setText:[[peripheral identifier] UUIDString]];
 
     if([peripheral isConnected])
@@ -154,40 +165,25 @@
 	return cell;
 }
 
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return YES;
-}
+//- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    return YES;
+//}
 
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if([indexPath section])
-    {
-        [[[LeDiscovery sharedInstance] foundPeripherals] removeObjectAtIndex:indexPath.row];
-        [self.tableView reloadData];
-    }
-    else
-    {
-        CBPeripheral	*peripheral;
-        NSArray			*devices;
-        devices = [[LeDiscovery sharedInstance] connectedPeripherals];
-        peripheral = [devices objectAtIndex:indexPath.row];
-        
-        [[LeDiscovery sharedInstance] disconnectPeripheral:peripheral];
-    }
-}
+//- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    CBPeripheral	*peripheral;
+//    NSArray			*devices;
+//    devices = [[LeDiscovery sharedInstance] connectedPeripherals];
+//    peripheral = [devices objectAtIndex:indexPath.row];
+//    
+//    [[LeDiscovery sharedInstance] disconnectPeripheral:peripheral];
+//}
 
-- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if([indexPath section])
-    {
-        return @"delete";
-    }
-    else
-    {
-        return @"disconnect";
-    }
-}
+//- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    return @"disconnect";
+//}
 
 /*
  // Override to support rearranging the table view.
@@ -212,6 +208,8 @@
 	NSInteger		row	= [indexPath row];
 	
 	if ([indexPath section] == 0) {
+        //because I've arbitrarily decided we only connect to one at a time
+        //we should never get here
         //connected devices, segue on over
 		devices = [[LeDiscovery sharedInstance] connectedPeripherals];
         currentPeripheral = [devices objectAtIndex:row];
@@ -253,6 +251,8 @@
 /** Peripheral connected */
 - (void) peripheralDidConnect:(CBPeripheral *)peripheral
 {
+    //Going to arbitrarily say you can only connect to one device at a time
+    //so go ahead and segue
     currentPeripheral = peripheral;
     [self manualSegue];
 }

@@ -28,6 +28,7 @@
 
 @synthesize foundPeripherals;
 @synthesize connectedPeripherals;
+@synthesize advertisingData;
 @synthesize discoveryDelegate;
 
 
@@ -45,7 +46,6 @@
     
 	return this;
 }
-
 
 - (id) init
 {
@@ -85,10 +85,10 @@
         
 		foundPeripherals = [[NSMutableArray alloc] init];
 		connectedPeripherals = [[NSMutableArray alloc] init];
+        advertisingData = [[NSMutableDictionary alloc] init];
 	}
     return self;
 }
-
 
 - (void) dealloc
 {
@@ -96,7 +96,23 @@
     assert(NO);
 }
 
+- (void) clearDevices
+{
+    [foundPeripherals removeAllObjects];
+    [connectedPeripherals removeAllObjects];
+    [advertisingData removeAllObjects];
+    [discoveryDelegate discoveryDidRefresh];
+}
 
+- (void) clearFoundPeripherals
+{
+    for(CBPeripheral *peripheral in foundPeripherals){
+        [advertisingData removeObjectForKey:[peripheral identifier]];
+
+    }
+    [foundPeripherals removeAllObjects];
+    [discoveryDelegate discoveryDidRefresh];
+}
 
 #pragma mark -
 #pragma mark Restoring
@@ -125,9 +141,7 @@
         [centralManager retrievePeripherals:[NSArray arrayWithObject:(__bridge id)uuid]];
         CFRelease(uuid);
     }
-    
 }
-
 
 - (void) addSavedDevice:(CFUUIDRef) uuid
 {
@@ -152,7 +166,6 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-
 - (void) removeSavedDevice:(CFUUIDRef) uuid
 {
 	NSArray			*storedDevices	= [[NSUserDefaults standardUserDefaults] arrayForKey:@"StoredDevices"];
@@ -173,7 +186,6 @@
 	}
 }
 
-
 - (void) centralManager:(CBCentralManager *)central didRetrieveConnectedPeripherals:(NSArray *)peripherals
 {
 	CBPeripheral	*peripheral;
@@ -185,13 +197,11 @@
 	[discoveryDelegate discoveryDidRefresh];
 }
 
-
 - (void) centralManager:(CBCentralManager *)central didRetrievePeripheral:(CBPeripheral *)peripheral
 {
 	[central connectPeripheral:peripheral options:connectOptions];
 	[discoveryDelegate discoveryDidRefresh];
 }
-
 
 - (void) centralManager:(CBCentralManager *)central didFailToRetrievePeripheralForUUID:(CFUUIDRef)UUID error:(NSError *)error
 {
@@ -202,106 +212,6 @@
 -(void)centralManager:(CBCentralManager *)central willRestoreState:(NSDictionary *)dict{
 
 }
-
-
-#pragma mark -
-#pragma mark Discovery
-/****************************************************************************/
-/*								Discovery                                   */
-/****************************************************************************/
-- (void) startScanningForUUIDString:(NSString *)uuidString
-{
-    NSArray			*uuidArray;
-    
-    if(uuidString){
-        uuidArray	= [NSArray arrayWithObjects:[CBUUID UUIDWithString:uuidString], nil];
-    }
-    else {
-        uuidArray = nil;
-    }
-        
-	[centralManager scanForPeripheralsWithServices:uuidArray options:scanOptions];
-}
-
-- (void) stopScanning
-{
-	[centralManager stopScan];
-}
-
-
-- (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI
-{
-	if (![foundPeripherals containsObject:peripheral]) {
-		[foundPeripherals addObject:peripheral];
-		[discoveryDelegate discoveryDidRefresh];
-	}
-}
-
-
-
-#pragma mark -
-#pragma mark Connection/Disconnection
-/****************************************************************************/
-/*						Connection/Disconnection                            */
-/****************************************************************************/
-- (void) connectPeripheral:(CBPeripheral*)peripheral
-{
-	if (![peripheral isConnected]) {
-		[centralManager connectPeripheral:peripheral options:connectOptions];
-	}
-}
-
-
-- (void) disconnectPeripheral:(CBPeripheral*)peripheral
-{
-	[centralManager cancelPeripheralConnection:peripheral];
-}
-
-
-- (void) centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
-{
-	if (![connectedPeripherals containsObject:peripheral])
-		[connectedPeripherals addObject:peripheral];
-    
-	if ([foundPeripherals containsObject:peripheral])
-		[foundPeripherals removeObject:peripheral];
-    
-    [discoveryDelegate peripheralDidConnect:peripheral];
-}
-
-
-- (void) centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
-{
-    NSLog(@"Attempted connection to peripheral %@ failed: %@", [peripheral name], [error localizedDescription]);
-}
-
-
-- (void) centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
-{
-    CBPeripheral *_peripheral;
-    
-	for (_peripheral in connectedPeripherals) {
-		if (_peripheral == peripheral) {
-			[connectedPeripherals removeObject:peripheral];
-            [discoveryDelegate peripheralDidDisconnect:peripheral];
-			break;
-		}
-	}
-    
-    //put back in our found list
-    [foundPeripherals addObject:peripheral];
-    
-	[discoveryDelegate peripheralDidDisconnect:peripheral];
-}
-
-
-- (void) clearDevices
-{
-    [foundPeripherals removeAllObjects];
-    [connectedPeripherals removeAllObjects];
-    [discoveryDelegate discoveryDidRefresh];
-}
-
 
 - (void) centralManagerDidUpdateState:(CBCentralManager *)central
 {
@@ -359,4 +269,114 @@
     
     previousState = [centralManager state];
 }
+
+
+#pragma mark -
+#pragma mark Discovery
+/****************************************************************************/
+/*								Discovery                                   */
+/****************************************************************************/
+- (void) startScanningForUUIDString:(NSString *)uuidString
+{
+    NSArray			*uuidArray;
+    
+    if(uuidString){
+        uuidArray	= [NSArray arrayWithObjects:[CBUUID UUIDWithString:uuidString], nil];
+    }
+    else {
+        uuidArray = nil;
+    }
+        
+	[centralManager scanForPeripheralsWithServices:uuidArray options:scanOptions];
+}
+
+- (void) stopScanning
+{
+	[centralManager stopScan];
+}
+
+- (void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI
+{
+	if (![foundPeripherals containsObject:peripheral]) {
+		[foundPeripherals addObject:peripheral];
+	}
+    
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    [dict setObject:RSSI forKey:@"RSSI"];
+    [dict setObject:advertisementData forKey:@"advertisementData"];
+    
+    [advertisingData setObject:dict forKey:[peripheral identifier]];
+
+    [discoveryDelegate discoveryDidRefresh];
+}
+
+
+#pragma mark -
+#pragma mark Connection/Disconnection
+/****************************************************************************/
+/*						Connection/Disconnection                            */
+/****************************************************************************/
+- (void) connectPeripheral:(CBPeripheral*)peripheral
+{
+	if (![peripheral isConnected]) {
+		[centralManager connectPeripheral:peripheral options:connectOptions];
+	}
+}
+
+- (void) disconnectPeripheral:(CBPeripheral*)peripheral
+{
+	[centralManager cancelPeripheralConnection:peripheral];
+}
+
+- (void) centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral
+{
+	if (![connectedPeripherals containsObject:peripheral])
+		[connectedPeripherals addObject:peripheral];
+    
+	if ([foundPeripherals containsObject:peripheral])
+		[foundPeripherals removeObject:peripheral];
+    
+    [peripheral setDelegate:self];
+    
+    [discoveryDelegate discoveryDidRefresh];
+    [discoveryDelegate peripheralDidConnect:peripheral];
+}
+
+- (void) centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
+{
+    NSLog(@"Attempted connection to peripheral %@ failed: %@", [peripheral name], [error localizedDescription]);
+}
+
+- (void) centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error
+{
+    CBPeripheral *_peripheral;
+    
+	for (_peripheral in connectedPeripherals) {
+		if (_peripheral == peripheral) {
+			[connectedPeripherals removeObject:peripheral];
+            [discoveryDelegate peripheralDidDisconnect:peripheral];
+			break;
+		}
+	}
+    
+    //put back in our found list
+    [foundPeripherals addObject:peripheral];
+    
+	[discoveryDelegate peripheralDidDisconnect:peripheral];
+}
+
+
+#pragma mark -
+#pragma mark Peripheral handling
+/****************************************************************************/
+/*						Peripheral handling                                 */
+/****************************************************************************/
+-(void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(NSError *)error
+{
+    NSMutableDictionary *dict = [advertisingData objectForKey:[peripheral identifier]];
+    [dict setObject:[peripheral RSSI] forKey:@"RSSI"];
+    [discoveryDelegate discoveryDidRefresh];
+
+}
+
 @end

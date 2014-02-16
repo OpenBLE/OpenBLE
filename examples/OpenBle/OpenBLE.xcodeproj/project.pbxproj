@@ -15,6 +15,8 @@
 		5B158E7918321E53006EE7C2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B158E7818321E53006EE7C2 /* AppDelegate.m */; };
 		5B158E7B18321E53006EE7C2 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5B158E7A18321E53006EE7C2 /* Images.xcassets */; };
 		5B22D6D5185FFF510067D75A /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5B22D6D4185FFF510067D75A /* libPods.a */; };
+		5B3B856918B04FB2006405C7 /* LE-Options.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5B3B856718B04FB2006405C7 /* LE-Options.plist */; };
+		5B3B856A18B04FB2006405C7 /* LE-UUIDs.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5B3B856818B04FB2006405C7 /* LE-UUIDs.plist */; };
 		5B4BCB3E18321E8500ADAE0E /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B4BCB3918321E8500ADAE0E /* DetailViewController.m */; };
 		5B4BCB48183220F200ADAE0E /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5BA1100418321D1E00A5398C /* CoreBluetooth.framework */; };
 		5BDED450189AE9C3007FDA71 /* MainStoryboard.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5BDED44F189AE9C3007FDA71 /* MainStoryboard.storyboard */; };
@@ -31,6 +33,8 @@
 		5B158E7A18321E53006EE7C2 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		5B158E8118321E53006EE7C2 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		5B22D6D4185FFF510067D75A /* libPods.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libPods.a; path = "Pods/build/Debug-iphoneos/libPods.a"; sourceTree = "<group>"; };
+		5B3B856718B04FB2006405C7 /* LE-Options.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "LE-Options.plist"; sourceTree = "<group>"; };
+		5B3B856818B04FB2006405C7 /* LE-UUIDs.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "LE-UUIDs.plist"; sourceTree = "<group>"; };
 		5B4BCB3818321E8500ADAE0E /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		5B4BCB3918321E8500ADAE0E /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		5BA1100418321D1E00A5398C /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
@@ -61,6 +65,8 @@
 		5B158E6E18321E53006EE7C2 /* OpenBLE */ = {
 			isa = PBXGroup;
 			children = (
+				5B3B856718B04FB2006405C7 /* LE-Options.plist */,
+				5B3B856818B04FB2006405C7 /* LE-UUIDs.plist */,
 				5B158E7718321E53006EE7C2 /* AppDelegate.h */,
 				5B158E7818321E53006EE7C2 /* AppDelegate.m */,
 				5B4BCB3818321E8500ADAE0E /* DetailViewController.h */,
@@ -168,8 +174,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5B3B856918B04FB2006405C7 /* LE-Options.plist in Resources */,
 				5B158E7318321E53006EE7C2 /* InfoPlist.strings in Resources */,
 				5BDED450189AE9C3007FDA71 /* MainStoryboard.storyboard in Resources */,
+				5B3B856A18B04FB2006405C7 /* LE-UUIDs.plist in Resources */,
 				5B158E7B18321E53006EE7C2 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

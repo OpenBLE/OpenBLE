@@ -5,9 +5,11 @@
 
 * ScannerViewController, BLECell and ScannerStoryboard.storybaord are all available as dependancies now. See openble.github.io or the example for info on how to use them.
 
-* LeDiscovery changes: foundperipherals and connectedperipherals are readonly. New method clearFoundPeripherals
+* LeDiscovery changes: No longer deals with services at all. When peripheraldidconnect is called you must initialize and start your service.
 
 * LeDiscovery changes: No more LeServiceDelegate. peripheralDidConnect and peripheralDidDisconnect become part of LeDiscoveryDelegate. serviceDidReset serviceDidChangeStatus are removed. discoveryStatePoweredOff becomes discoveryStateChanged:(CBCentralManagerState)state passing through all states.
+
+* LeDiscovery changes: foundperipherals and connectedperipherals are readonly. New method clearFoundPeripherals
 
 * LeDiscovery changes: startScanningForUUIDString now returns CBCentralManagerState
 

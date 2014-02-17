@@ -3,6 +3,8 @@
 
 ## Version 1.0.0
 
+* platform is ios6 now. Technically it always was because of refreshcontrol. 
+
 * ScannerViewController, BLECell and ScannerStoryboard.storybaord are all available as dependancies now. See openble.github.io or the example for info on how to use them.
 
 * LeDiscovery changes: No longer deals with services at all. When peripheraldidconnect is called you must initialize and start your service.

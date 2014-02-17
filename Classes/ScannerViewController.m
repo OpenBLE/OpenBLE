@@ -17,6 +17,7 @@
 @synthesize currentPeripheral;
 @synthesize sensorsTable;
 @synthesize refreshControl;
+@synthesize indicator;
 
 #pragma mark -
 #pragma mark View lifecycle
@@ -59,7 +60,12 @@
     
     [[LeDiscovery sharedInstance] setDiscoveryDelegate:self];
     
-    [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
+    if( [[LeDiscovery sharedInstance] startScanningForUUIDString:nil] == CBCentralManagerStatePoweredOff)
+    {
+        [indicator stopAnimating];
+    }else{
+        [indicator startAnimating];
+    }
     
     [sensorsTable reloadData];
 }
@@ -80,7 +86,14 @@
     [self.refreshControl beginRefreshing];
     [[LeDiscovery sharedInstance] stopScanning];
     [[LeDiscovery sharedInstance] clearFoundPeripherals];
-    [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
+
+    if( [[LeDiscovery sharedInstance] startScanningForUUIDString:nil] == CBCentralManagerStatePoweredOff)
+    {
+        [indicator stopAnimating];
+    }else{
+        [indicator startAnimating];
+    }
+    
     [self.tableView reloadData];
     [self.refreshControl endRefreshing];
 }
@@ -231,15 +244,24 @@
 /****************************************************************************/
 - (void) discoveryDidRefresh 
 {
+    [indicator startAnimating];
+
     [sensorsTable reloadData];
 }
 
-- (void) discoveryStatePoweredOff
+- (void) discoveryStateChanged:(CBCentralManagerState)state
 {
-    NSString *title     = @"Bluetooth Power";
-    NSString *message   = @"You must turn on Bluetooth in Settings in order to use LE";
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-    [alertView show];
+    if(state == CBCentralManagerStatePoweredOn){
+        [self refresh:nil];
+    }else
+    {
+        [indicator stopAnimating];
+        
+        NSString *title     = @"Bluetooth Power";
+        NSString *message   = @"You must turn on Bluetooth in Settings in order to use LE";
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alertView show];
+    }
 }
 
 /** Peripheral disconnected -- do something? */
@@ -272,7 +294,12 @@
 - (void)didEnterForegroundNotification:(NSNotification*)notification
 {
     //start scanning again
-    [[LeDiscovery sharedInstance] startScanningForUUIDString:nil];
+    if( [[LeDiscovery sharedInstance] startScanningForUUIDString:nil] == CBCentralManagerStatePoweredOff)
+    {
+        [indicator stopAnimating];
+    }else{
+        [indicator startAnimating];
+    }
 }
 
 @end

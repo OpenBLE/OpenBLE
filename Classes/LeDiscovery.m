@@ -217,17 +217,13 @@
 {
     static CBCentralManagerState previousState = -1;
     
-	switch ([centralManager state]) {
+    CBCentralManagerState newState = [centralManager state];
+    
+	switch (newState) {
 		case CBCentralManagerStatePoweredOff:
 		{
             [self clearDevices];
             [discoveryDelegate discoveryDidRefresh];
-            
-			/* Tell user to power ON BT for functionality, but not on first run - the Framework will alert in that instance. */
-            if ((int)previousState != -1) {
-                [discoveryDelegate discoveryStatePoweredOff];
-            }
-			break;
 		}
             
 		case CBCentralManagerStateUnauthorized:
@@ -267,7 +263,9 @@
 		}
 	}
     
-    previousState = [centralManager state];
+    [discoveryDelegate discoveryStateChanged:newState];
+
+    previousState = newState;
 }
 
 
@@ -276,7 +274,7 @@
 /****************************************************************************/
 /*								Discovery                                   */
 /****************************************************************************/
-- (void) startScanningForUUIDString:(NSString *)uuidString
+- (CBCentralManagerState) startScanningForUUIDString:(NSString *)uuidString
 {
     NSArray			*uuidArray;
     
@@ -288,6 +286,8 @@
     }
         
 	[centralManager scanForPeripheralsWithServices:uuidArray options:scanOptions];
+    
+    return [centralManager state];
 }
 
 - (void) stopScanning
@@ -376,7 +376,6 @@
     NSMutableDictionary *dict = [advertisingData objectForKey:[peripheral identifier]];
     [dict setObject:[peripheral RSSI] forKey:@"RSSI"];
     [discoveryDelegate discoveryDidRefresh];
-
 }
 
 @end

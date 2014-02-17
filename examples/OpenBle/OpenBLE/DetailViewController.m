@@ -167,10 +167,15 @@
 /** Bluetooth support was disabled */
 - (void) discoveryStatePoweredOff
 {
+    
     NSString *title     = @"Bluetooth Power";
     NSString *message   = @"You must turn on Bluetooth in Settings in order to use LE";
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alertView show];
+    
+    //may just want to automatically go back to chooser
+    //We have to manually dismiss our view controller instead of using IB's back button
+    [[self.navigationController presentingViewController] dismissViewControllerAnimated:YES completion:nil];
 }
 
 /** Peripheral disconnected -- do something? */

@@ -14,6 +14,7 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *sensorsTable;
 @property (strong, nonatomic) IBOutlet UIRefreshControl *refreshControl;
+@property (unsafe_unretained, nonatomic) IBOutlet UIActivityIndicatorView *indicator;
 
 @property (weak, nonatomic) CBPeripheral* currentPeripheral;
 

@@ -12,7 +12,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <label key="tableHeaderView" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Scanning ... Pull to restart and refresh" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Riq-1l-t2A">
+                        <label key="tableHeaderView" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pull to restart and refresh" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Riq-1l-t2A">
                             <rect key="frame" x="0.0" y="64" width="320" height="21"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -74,7 +74,21 @@
                             <outlet property="delegate" destination="5Fm-co-d9L" id="aRf-PS-CmV"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Chooser" id="5dX-Mv-XoS"/>
+                    <navigationItem key="navigationItem" title="Chooser" id="5dX-Mv-XoS">
+                        <barButtonItem key="rightBarButtonItem" style="plain" id="iEJ-W1-cGU">
+                            <view key="customView" contentMode="scaleToFill" id="6np-0W-Kf2">
+                                <rect key="frame" x="233" y="5" width="71" height="33"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" id="kvD-H6-fOo">
+                                        <rect key="frame" x="20" y="7" width="20" height="20"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    </activityIndicatorView>
+                                </subviews>
+                                <color key="backgroundColor" red="0.96862751245498657" green="0.96862751245498657" blue="0.96862751245498657" alpha="1" colorSpace="deviceRGB"/>
+                            </view>
+                        </barButtonItem>
+                    </navigationItem>
                     <refreshControl key="refreshControl" opaque="NO" multipleTouchEnabled="YES" contentMode="center" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="2MT-H2-Qdc">
                         <autoresizingMask key="autoresizingMask"/>
                         <connections>
@@ -82,6 +96,7 @@
                         </connections>
                     </refreshControl>
                     <connections>
+                        <outlet property="indicator" destination="kvD-H6-fOo" id="fbj-7k-RTe"/>
                         <outlet property="refreshControl" destination="2MT-H2-Qdc" id="eQD-OC-xyN"/>
                         <outlet property="sensorsTable" destination="y4s-ER-bmq" id="hsB-If-PMn"/>
                     </connections>

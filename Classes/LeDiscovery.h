@@ -20,7 +20,7 @@
 /****************************************************************************/
 @protocol LeDiscoveryDelegate <NSObject>
 - (void) discoveryDidRefresh;
-- (void) discoveryStatePoweredOff;
+- (void) discoveryStateChanged:(CBCentralManagerState)state;
 - (void) peripheralDidConnect:(CBPeripheral*)peripheral;
 - (void) peripheralDidDisconnect:(CBPeripheral*)peripheral;
 @end
@@ -43,7 +43,7 @@
 /****************************************************************************/
 /*								Actions										*/
 /****************************************************************************/
-- (void) startScanningForUUIDString:(NSString *)uuidString;
+- (CBCentralManagerState) startScanningForUUIDString:(NSString *)uuidString;
 
 - (void) stopScanning;
 

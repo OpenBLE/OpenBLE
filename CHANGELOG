@@ -7,7 +7,9 @@
 
 * LeDiscovery changes: foundperipherals and connectedperipherals are readonly. New method clearFoundPeripherals
 
-* LeDiscovery changes: No more LeServiceDelegate. peripheralDidConnect and peripheralDidDisconnect become part of LeDiscoveryDelegate. serviceDidReset serviceDidChangeStatus are removed.
+* LeDiscovery changes: No more LeServiceDelegate. peripheralDidConnect and peripheralDidDisconnect become part of LeDiscoveryDelegate. serviceDidReset serviceDidChangeStatus are removed. discoveryStatePoweredOff becomes discoveryStateChanged:(CBCentralManagerState)state passing through all states.
+
+* LeDiscovery changes: startScanningForUUIDString now returns CBCentralManagerState
 
 * LeDataService.h changes: serviceDidChangeStatus and serviceDidReset are removed from LeDataProtocol
 

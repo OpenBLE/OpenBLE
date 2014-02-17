@@ -165,9 +165,8 @@
 /*                       LeDiscoveryDelegate Methods                        */
 /****************************************************************************/
 /** Bluetooth support was disabled */
-- (void) discoveryStatePoweredOff
+- (void) discoveryStateChanged:(CBCentralManagerState)state
 {
-    
     NSString *title     = @"Bluetooth Power";
     NSString *message   = @"You must turn on Bluetooth in Settings in order to use LE";
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];

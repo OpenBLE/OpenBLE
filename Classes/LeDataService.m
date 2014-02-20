@@ -17,7 +17,7 @@
 @private
     
     NSMutableArray *serviceCBUUIDs;
-    NSMutableArray *writeCBUUIDs;
+    NSMutableArray *writeWithoutResponseCBUUIDs;
     NSMutableArray *writeWithResponseCBUUIDs;
     NSMutableArray *readCBUUIDs;
     
@@ -68,18 +68,18 @@
                                               format:&format
                                               errorDescription:&errorDesc];
         if (!LE_UUIDArrays) {
-            NSLog(@"Error reading plist: %@, format: %u", errorDesc, format);
+            NSLog(@"Error reading plist: %@, format: %lu", errorDesc, format);
         }
 
         NSArray *serviceUUIDStrings = [LE_UUIDArrays objectForKey:@"service-uuids"];
-        NSArray *writeUUIDStrings = [LE_UUIDArrays objectForKey:@"write-uuids"];
+        NSArray *writeWithoutResponseUUIDStrings = [LE_UUIDArrays objectForKey:@"write-without-response-uuids"];
 
         NSArray *writeWithResponseUUIDStrings = [LE_UUIDArrays objectForKey:@"write-with-response-uuids"];
 
         NSArray *readUUIDStrings = [LE_UUIDArrays objectForKey:@"read-uuids"];
         
         serviceCBUUIDs=[[NSMutableArray alloc] init];
-        writeCBUUIDs=[[NSMutableArray alloc] init];
+        writeWithResponseCBUUIDs=[[NSMutableArray alloc] init];
         writeWithResponseCBUUIDs=[[NSMutableArray alloc] init];
 
         readCBUUIDs=[[NSMutableArray alloc] init];
@@ -88,12 +88,11 @@
             [serviceCBUUIDs addObject:[CBUUID UUIDWithString:uuidString]];
         }
         
-        for(NSString *uuidString in writeUUIDStrings){
-            [writeCBUUIDs addObject:[CBUUID UUIDWithString:uuidString]];
+        for(NSString *uuidString in writeWithoutResponseUUIDStrings){
+            [writeWithoutResponseCBUUIDs addObject:[CBUUID UUIDWithString:uuidString]];
         }
         
         for(NSString *uuidString in writeWithResponseUUIDStrings){
-            [writeCBUUIDs addObject:[CBUUID UUIDWithString:uuidString]];
             [writeWithResponseCBUUIDs addObject:[CBUUID UUIDWithString:uuidString]];
         }
         
@@ -144,9 +143,10 @@
 - (void) peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error
 {
 	NSArray		*services	= nil;
-    NSMutableArray* uuids = [NSMutableArray arrayWithArray:writeCBUUIDs];
+    NSMutableArray* uuids = [NSMutableArray arrayWithArray:writeWithResponseCBUUIDs];
+    [uuids addObjectsFromArray: writeWithResponseCBUUIDs];
     [uuids addObjectsFromArray: readCBUUIDs];
-    
+
 	if (peripheral != servicePeripheral) {
 		NSLog(@"Wrong Peripheral.\n");
 		return;
@@ -204,7 +204,7 @@
 			readCharacteristic = characteristic;
             [peripheral setNotifyValue:YES forCharacteristic:characteristic];
 		}
-        else if ([writeCBUUIDs containsObject:[characteristic UUID]]) { // Write
+        else if ([writeWithResponseCBUUIDs containsObject:[characteristic UUID]] || [writeWithoutResponseCBUUIDs containsObject:[characteristic UUID]]) { // Write
             NSLog(@"Discovered Write Characteristic");
 			writeCharacteristic = characteristic;
 		} 
@@ -242,11 +242,11 @@
 
     if([writeWithResponseCBUUIDs containsObject:writeCharacteristic])
     {
-        [servicePeripheral writeValue:data forCharacteristic:writeCharacteristic type:CBCharacteristicWriteWithoutResponse];
-        [peripheralDelegate didWriteFromService:self withError:nil];
+        [servicePeripheral writeValue:data forCharacteristic:writeCharacteristic type:CBCharacteristicWriteWithResponse];
     }
     else{
-        [servicePeripheral writeValue:data forCharacteristic:writeCharacteristic type:CBCharacteristicWriteWithResponse];
+        [servicePeripheral writeValue:data forCharacteristic:writeCharacteristic type:CBCharacteristicWriteWithoutResponse];
+        [peripheralDelegate didWriteFromService:self withError:nil];
     }
 }
 
@@ -261,7 +261,7 @@
             
             // Find the read characteristic
             for (CBCharacteristic *characteristic in [service characteristics]) {
-                if ( [writeCBUUIDs containsObject:[characteristic UUID]] ) {
+                if ( [readCBUUIDs containsObject:[characteristic UUID]] ) {
                     
                     // And STOP getting notifications from it
                     [servicePeripheral setNotifyValue:NO forCharacteristic:characteristic];
@@ -280,7 +280,7 @@
             
             // Find the read characteristic
             for (CBCharacteristic *characteristic in [service characteristics]) {
-                if ( [writeCBUUIDs containsObject:[characteristic UUID]] ) {
+                if ( [readCBUUIDs containsObject:[characteristic UUID]] ) {
                     
                     // And START getting notifications from it
                     [servicePeripheral setNotifyValue:YES forCharacteristic:characteristic];

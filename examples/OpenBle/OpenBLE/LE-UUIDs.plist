@@ -2,16 +2,16 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>write-with-response-uuids</key>
-	<array>
-		<string>713D0003-503E-4C75-BA94-3148F18D941E</string>
-	</array>
 	<key>service-uuids</key>
 	<array>
 		<string>FFF0</string>
 		<string>713D0000-503E-4C75-BA94-3148F18D941E</string>
 	</array>
-	<key>write-uuids</key>
+	<key>write-without-response-uuids</key>
+	<array>
+		<string>713D0003-503E-4C75-BA94-3148F18D941E</string>
+	</array>
+	<key>write-with-response-uuids</key>
 	<array>
 		<string>FFF2</string>
 	</array>
